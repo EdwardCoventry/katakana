@@ -1,0 +1,21 @@
+
+
+data\*.csv files should NOT have header english,katakana
+
+get your data from
+C:\Users\Eddco\code\learnjapanesethroughsubtitles\learnjapanesethroughsubtitles\source\translate\pretransliterations
+customdata.csv
+engkata.csv
+latinletters.csv
+loanwordsgairaigo.csv
+namesdata.csv
+numerals.csv
+
+and
+C:\Users\Eddco\code\learnjapanesethroughsubtitles\learnjapanesethroughsubtitles\source\translate\engkatasplitstore
+eng_kata_splits.export_to_csv(path) (untested)
+
+and put csvs in 
+C:\Users\Eddco\code\learnjapanesethroughsubtitles\venv\Lib\site-packages\katakana\katakana-master\katakana-master\dataset\data
+
+make sure no headers

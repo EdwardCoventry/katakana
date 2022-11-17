@@ -4,16 +4,24 @@ import pandas as pd
 
 from katakana import model, encoding
 
-MAX_ENGLISH_INPUT_LENGTH = 20
-MAX_KATAKANA_OUTPUT_LENGTH = 20
+MAX_ENGLISH_INPUT_LENGTH = 32
+MAX_KATAKANA_OUTPUT_LENGTH = 32
 
 # Load and shuffle  ----------------------
 
-data = pd.read_csv('./dataset/data.csv')
+# data = pd.read_csv('./dataset/data.csv')
+
+"""  will read all csvs from data folder  """
+files = glob.glob("./dataset/data/*.csv")
+dfs = [pd.read_csv(f, header=None, sep=";") for f in files]
+data = pd.concat(dfs,ignore_index=True)
+data.columns = ['english' 'katakana']
+
+
 data = data.sample(frac=1, random_state=0)
 
-data_input = [s.lower() for s in data[0]]
-data_output = [s.lower() for s in data[1]]
+data_input = [s for s in data['english']]
+data_output = [s for s in data['katakana']]
 
 data_size = len(data)
 
