@@ -1,14 +1,17 @@
 from __future__ import print_function
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import os.path
 
-from katakana import model, encoding, config, loadcsvdata
+from katakana import getconfig, model, encoding, loadcsvdata
 import keras.callbacks
 
-MAX_ENGLISH_INPUT_LENGTH = 32
-MAX_KATAKANA_OUTPUT_LENGTH = 32
+general_config = getconfig.get_config()
+
+MAX_ENGLISH_INPUT_LENGTH = general_config['vector_length']
+MAX_KATAKANA_OUTPUT_LENGTH = general_config['vector_length']
 
 # Load and shuffle  ----------------------
 
@@ -59,7 +62,7 @@ early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
                                                         )
 """  save all checkpoints  """
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-    filepath=os.path.join('trained_models', config.version, 'checkpoints', '{epoch:02d}-{val_loss:.2f}.hdf5'),
+    filepath=os.path.join('trained_models', general_config['version'], 'checkpoints', '{epoch:02d}-{val_loss:.2f}.hdf5'),
     save_weights_only=True,
     monitor='val_accuracy',
     mode='max',
@@ -81,4 +84,4 @@ model.save(
     input_decoding=input_decoding,
     output_encoding=output_encoding,
     output_decoding=output_decoding,
-    version=config.version)
+    config=general_config)

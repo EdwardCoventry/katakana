@@ -1,23 +1,24 @@
 import json
 import os
 import shutil
-
 import numpy as np
 from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
-# from tensorflow.keras.models import Model, load_model
-
 from keras.models import Model, load_model
 
-from . import encoding, config
+from . import encoding, getconfig
 
-DEFAULT_INPUT_LENGTH = config.DEFAULT_VECTOR_LENGTH
-DEFAULT_OUTPUT_LENGTH = config.DEFAULT_VECTOR_LENGTH
+general_config = getconfig.get_config()
 
+DEFAULT_INPUT_LENGTH = general_config['vector_length']
+DEFAULT_OUTPUT_LENGTH = general_config['vector_length']
 
 def load(save_dir='trained_models', version=None):
 
     version_dir = os.path.join(save_dir, version)
     get_path = lambda filename: os.path.join(version_dir, filename)
+
+    # Read YAML file
+    config = getconfig.get_config(version_dir)
 
     input_encoding = json.load(open(get_path('input_encoding.json')))
     input_decoding = json.load(open(get_path('input_decoding.json')))
@@ -28,13 +29,13 @@ def load(save_dir='trained_models', version=None):
     output_decoding = {int(k): v for k, v in output_decoding.items()}
 
     model = load_model(get_path('model.h5'))
-    return model, input_encoding, input_decoding, output_encoding, output_decoding
+    return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
 
-def save(model, input_encoding, input_decoding, output_encoding, output_decoding,
-         save_dir='trained_models', version=None):
+def save(model, input_encoding, input_decoding, output_encoding, output_decoding, config,
+         save_dir='trained_models'):
 
-    version_dir = os.path.join(save_dir, version)
+    version_dir = os.path.join(save_dir, config['version'])
     get_path = lambda filename: os.path.join(version_dir, filename)
 
     if os.path.exists(version_dir):
@@ -55,6 +56,10 @@ def save(model, input_encoding, input_decoding, output_encoding, output_decoding
         json.dump(output_decoding, f)
 
     model.save(get_path('model.h5'))
+
+    """  save a copy of the config file  """
+    # Write YAML file
+    getconfig.write_config(config, version_dir)
 
 
 def create_model(
