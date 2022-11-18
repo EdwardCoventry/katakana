@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import shutil
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -48,6 +50,12 @@ training_encoder_input, training_decoder_input, training_decoder_output = \
 validation_encoder_input, validation_decoder_input, validation_decoder_output = \
     model.create_model_data(encoded_validation_input, encoded_validation_output, output_dict_size)
 
+"""  delete folder if it exists, and (re)make it  """
+version_dir = os.path.join(general_config['save_dir'], general_config['version'])
+if os.path.exists(version_dir):
+    shutil.rmtree(version_dir)
+os.mkdir(version_dir)
+
 # Building the model ----------------------
 seq2seq_model = model.create_model(
     input_dict_size=input_dict_size,
@@ -62,7 +70,7 @@ early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
                                                         )
 """  save all checkpoints  """
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-    filepath=os.path.join('trained_models', general_config['version'], 'checkpoints', '{epoch:02d}-{val_loss:.2f}.hdf5'),
+    filepath=os.path.join(version_dir, 'checkpoints', '{epoch:02d}-{val_loss:.2f}.hdf5'),
     save_weights_only=True,
     monitor='val_accuracy',
     mode='max',

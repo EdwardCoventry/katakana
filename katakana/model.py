@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 import numpy as np
 from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
 from keras.models import Model, load_model
@@ -12,7 +11,9 @@ general_config = getconfig.get_config()
 DEFAULT_INPUT_LENGTH = general_config['vector_length']
 DEFAULT_OUTPUT_LENGTH = general_config['vector_length']
 
-def load(save_dir='trained_models', version=None):
+save_dir = getconfig.get_config()['save_dir']
+
+def load(version=None):
 
     version_dir = os.path.join(save_dir, version)
     get_path = lambda filename: os.path.join(version_dir, filename)
@@ -32,16 +33,10 @@ def load(save_dir='trained_models', version=None):
     return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
 
-def save(model, input_encoding, input_decoding, output_encoding, output_decoding, config,
-         save_dir='trained_models'):
+def save(model, input_encoding, input_decoding, output_encoding, output_decoding, config):
 
     version_dir = os.path.join(save_dir, config['version'])
     get_path = lambda filename: os.path.join(version_dir, filename)
-
-    if os.path.exists(version_dir):
-        shutil.rmtree(version_dir)
-
-    os.mkdir(version_dir)
 
     with open(get_path('input_encoding.json'), 'w') as f:
         json.dump(input_encoding, f)

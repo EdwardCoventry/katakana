@@ -1,5 +1,8 @@
 
 
 version: test2
+save_dir: trained_models
+
 vector_length: 32
+
 
