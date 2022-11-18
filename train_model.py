@@ -49,7 +49,7 @@ validation_encoder_input, validation_decoder_input, validation_decoder_output = 
 
 """  delete folder if it exists, and (re)make it 
      also make checkpoints folder  """
-version_dir = os.path.join('trained_models', training_config['version'])
+version_dir = os.path.join('katakana/trained_models', training_config['version'])
 if os.path.exists(version_dir):
     shutil.rmtree(version_dir)
 os.mkdir(version_dir)

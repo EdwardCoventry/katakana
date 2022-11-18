@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='katakana',
-    version='0.1',
-    description='English to Katakana with sequence-to-seqeucne learning',
+    version='0.1.1',
+    description='English to Katakana with sequence-to-sequence learning',
     license='MIT',
     url='http://github.com/wanasit/katakana',
     author='wanasit',
