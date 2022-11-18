@@ -1,0 +1,7 @@
+
+
+version: pretrained
+vector_length: 32
+convert_to_lower: False
+
+

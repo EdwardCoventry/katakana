@@ -6,16 +6,10 @@ from keras.models import Model, load_model
 
 from . import encoding, getconfig
 
-general_config = getconfig.get_config()
-
-DEFAULT_INPUT_LENGTH = general_config['vector_length']
-DEFAULT_OUTPUT_LENGTH = general_config['vector_length']
-
-save_dir = getconfig.get_config()['save_dir']
 
 def load(version=None):
 
-    version_dir = os.path.join(save_dir, version)
+    version_dir = os.path.join('trained_models', version)
     get_path = lambda filename: os.path.join(version_dir, filename)
 
     # Read YAML file
@@ -35,7 +29,7 @@ def load(version=None):
 
 def save(model, input_encoding, input_decoding, output_encoding, output_decoding, config):
 
-    version_dir = os.path.join(save_dir, config['version'])
+    version_dir = os.path.join('trained_models', config['version'])
     get_path = lambda filename: os.path.join(version_dir, filename)
 
     with open(get_path('input_encoding.json'), 'w') as f:
@@ -54,14 +48,14 @@ def save(model, input_encoding, input_decoding, output_encoding, output_decoding
 
     """  save a copy of the config file  """
     # Write YAML file
-    getconfig.write_config(config, version_dir)
+    getconfig.write_model_config(config, version_dir)
 
 
 def create_model(
         input_dict_size,
         output_dict_size,
-        input_length=DEFAULT_INPUT_LENGTH,
-        output_length=DEFAULT_OUTPUT_LENGTH):
+        input_length,
+        output_length):
 
     encoder_input = Input(shape=(input_length,))
     decoder_input = Input(shape=(output_length,))
@@ -98,10 +92,13 @@ def create_model_data(
 
 
 def to_katakana(text, model, input_encoding, output_decoding,
-                input_length=DEFAULT_INPUT_LENGTH,
-                output_length=DEFAULT_OUTPUT_LENGTH):
+                input_length, output_length,
+                convert_to_lower):
 
-    encoder_input = encoding.transform(input_encoding, [text], input_length)
+    if convert_to_lower:
+        text = text.lower()
+
+    encoder_input = encoding.transform(input_encoding, [text], input_length, convert_to_lower)
     decoder_input = np.zeros(shape=(len(encoder_input), output_length))
     decoder_input[:, 0] = encoding.CHAR_CODE_START
     for i in range(1, output_length):

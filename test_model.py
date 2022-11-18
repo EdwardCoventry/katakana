@@ -5,11 +5,11 @@ from katakana import getconfig, model, encoding, loadcsvdata
 # ===============================================================
 
 # Read YAML file
-general_config = getconfig.get_config()
+use_model_config = getconfig.get_use_model_config()
 
 print('Loading the model...')
 
-testing_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(general_config['version'])
+testing_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(use_model_config['version'])
 
 # ===============================================================
 
@@ -27,8 +27,8 @@ test_split = int(data_size*10/100)
 test_input = data_input[:test_split]
 test_output = data_output[:test_split]
 
-encoded_testing_input = encoding.transform(input_encoding, test_input, vector_size=config['vector_length'])
-encoded_testing_output = encoding.transform(output_encoding, test_output, vector_size=config['vector_length'])
+encoded_testing_input = encoding.transform(input_encoding, test_input, config['vector_length'], config['convert_to_lower'])
+encoded_testing_output = encoding.transform(output_encoding, test_output, config['vector_length'], config['convert_to_lower'])
 
 test_encoder_input, test_decoder_input, test_decoder_output = \
     model.create_model_data(encoded_testing_input, encoded_testing_output, len(output_decoding) + 1)
@@ -41,7 +41,9 @@ print('Evaluating the model on random names...')
 
 
 def to_katakan(english_text):
-    return model.to_katakana(english_text, testing_model, input_encoding, output_decoding, input_length=config['vector_length'], output_length=config['vector_length'])
+    return model.to_katakana(english_text, testing_model, input_encoding, output_decoding,
+                             input_length=config['vector_length'], output_length=config['vector_length'],
+                             convert_to_lower=config['convert_to_lower'])
 
 
 print(data_input[0], to_katakan(data_input[0]))

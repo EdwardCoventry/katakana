@@ -10,10 +10,7 @@ import os.path
 from katakana import getconfig, model, encoding, loadcsvdata
 import keras.callbacks
 
-general_config = getconfig.get_config()
-
-MAX_ENGLISH_INPUT_LENGTH = general_config['vector_length']
-MAX_KATAKANA_OUTPUT_LENGTH = general_config['vector_length']
+training_config = getconfig.get_training_config()
 
 # Load and shuffle  ----------------------
 
@@ -34,13 +31,13 @@ validation_output = data_output[train_split_index:]
 
 # Encoding the dataset ----------------------
 
-input_encoding, input_decoding, input_dict_size = encoding.build_characters_encoding(data_input)
-output_encoding, output_decoding, output_dict_size = encoding.build_characters_encoding(data_output)
+input_encoding, input_decoding, input_dict_size = encoding.build_characters_encoding(data_input, training_config['convert_to_lower'])
+output_encoding, output_decoding, output_dict_size = encoding.build_characters_encoding(data_output, training_config['convert_to_lower'])
 
-encoded_training_input = encoding.transform(input_encoding, training_input, vector_size=MAX_ENGLISH_INPUT_LENGTH)
-encoded_training_output = encoding.transform(output_encoding, training_output, vector_size=MAX_KATAKANA_OUTPUT_LENGTH)
-encoded_validation_input = encoding.transform(input_encoding, validation_input, vector_size=MAX_ENGLISH_INPUT_LENGTH)
-encoded_validation_output = encoding.transform(output_encoding, validation_output, vector_size=MAX_KATAKANA_OUTPUT_LENGTH)
+encoded_training_input = encoding.transform(input_encoding, training_input, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
+encoded_training_output = encoding.transform(output_encoding, training_output, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
+encoded_validation_input = encoding.transform(input_encoding, validation_input, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
+encoded_validation_output = encoding.transform(output_encoding, validation_output, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
 
 # Building the model ----------------------
 
@@ -52,7 +49,7 @@ validation_encoder_input, validation_decoder_input, validation_decoder_output = 
 
 """  delete folder if it exists, and (re)make it 
      also make checkpoints folder  """
-version_dir = os.path.join(general_config['save_dir'], general_config['version'])
+version_dir = os.path.join('trained_models', training_config['version'])
 if os.path.exists(version_dir):
     shutil.rmtree(version_dir)
 os.mkdir(version_dir)
@@ -63,8 +60,8 @@ os.mkdir(checkpoints_dir)
 seq2seq_model = model.create_model(
     input_dict_size=input_dict_size,
     output_dict_size=output_dict_size,
-    input_length=MAX_ENGLISH_INPUT_LENGTH,
-    output_length=MAX_KATAKANA_OUTPUT_LENGTH)
+    input_length=training_config['vector_length'],
+    output_length=training_config['vector_length'])
 
 """  stop when ceases to improve  """
 early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
@@ -96,4 +93,4 @@ model.save(
     input_decoding=input_decoding,
     output_encoding=output_encoding,
     output_decoding=output_decoding,
-    config=general_config)
+    config=training_config)
