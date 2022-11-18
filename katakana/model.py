@@ -101,7 +101,7 @@ def to_katakana(text, model, input_encoding, output_decoding,
                 input_length=DEFAULT_INPUT_LENGTH,
                 output_length=DEFAULT_OUTPUT_LENGTH):
 
-    encoder_input = encoding.transform(input_encoding, [text.lower()], input_length)
+    encoder_input = encoding.transform(input_encoding, [text], input_length)
     decoder_input = np.zeros(shape=(len(encoder_input), output_length))
     decoder_input[:, 0] = encoding.CHAR_CODE_START
     for i in range(1, output_length):
