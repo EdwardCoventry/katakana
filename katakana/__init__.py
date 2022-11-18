@@ -19,7 +19,7 @@ def load_default_model(version=None):
 
     # print('loading model ...')
     loaded_model, input_encoding, input_decoding, output_encoding, output_decoding, config = \
-        model.load(save_dir='trained_models', version=version)
+        model.load(version=version)
     # print('model loaded ...')
 
 
