@@ -25,8 +25,7 @@ def to_katakana(text, version=None):
         load_default_model(version=version)
 
     return model.to_katakana(
-        text=text.lower(),
+        text=text,
         model=loaded_model,
         input_encoding=input_encoding,
         output_decoding=output_decoding)
-
