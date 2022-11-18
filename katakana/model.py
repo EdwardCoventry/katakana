@@ -3,52 +3,58 @@ import os
 import shutil
 
 import numpy as np
-from tensorflow.keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
+from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
 # from tensorflow.keras.models import Model, load_model
 
-from tensorflow.keras.models import Model, load_model
+from keras.models import Model, load_model
 
-from . import encoding
+from . import encoding, config
 
-DEFAULT_INPUT_LENGTH = encoding.DEFAULT_VECTOR_LENGTH
-DEFAULT_OUTPUT_LENGTH = encoding.DEFAULT_VECTOR_LENGTH
+DEFAULT_INPUT_LENGTH = config.DEFAULT_VECTOR_LENGTH
+DEFAULT_OUTPUT_LENGTH = config.DEFAULT_VECTOR_LENGTH
 
 
-def load(save_dir='trained_models'):
+def load(save_dir='trained_models', version=None):
 
-    input_encoding = json.load(open(save_dir + '/input_encoding.json'))
-    input_decoding = json.load(open(save_dir + '/input_decoding.json'))
+    version_dir = os.path.join(save_dir, version)
+    get_path = lambda filename: os.path.join(version_dir, filename)
+
+    input_encoding = json.load(open(get_path('input_encoding.json')))
+    input_decoding = json.load(open(get_path('input_decoding.json')))
     input_decoding = {int(k): v for k, v in input_decoding.items()}
 
-    output_encoding = json.load(open(save_dir + '/output_encoding.json'))
-    output_decoding = json.load(open(save_dir + '/output_decoding.json'))
+    output_encoding = json.load(open(get_path('output_encoding.json')))
+    output_decoding = json.load(open(get_path('output_decoding.json')))
     output_decoding = {int(k): v for k, v in output_decoding.items()}
 
-    model = load_model(save_dir + '/model.h5')
+    model = load_model(get_path('model.h5'))
     return model, input_encoding, input_decoding, output_encoding, output_decoding
 
 
 def save(model, input_encoding, input_decoding, output_encoding, output_decoding,
-         save_dir='trained_models'):
+         save_dir='trained_models', version=None):
 
-    if os.path.exists(save_dir):
-        shutil.rmtree(save_dir)
+    version_dir = os.path.join(save_dir, version)
+    get_path = lambda filename: os.path.join(version_dir, filename)
 
-    os.mkdir(save_dir)
+    if os.path.exists(version_dir):
+        shutil.rmtree(version_dir)
 
-    with open(save_dir + '/input_encoding.json', 'w') as f:
+    os.mkdir(version_dir)
+
+    with open(get_path('input_encoding.json'), 'w') as f:
         json.dump(input_encoding, f)
 
-    with open(save_dir + '/input_decoding.json', 'w') as f:
+    with open(get_path('input_decoding.json'), 'w') as f:
         json.dump(input_decoding, f)
 
-    with open(save_dir + '/output_encoding.json', 'w') as f:
+    with open(get_path('output_encoding.json'), 'w') as f:
         json.dump(output_encoding, f)
 
-    with open(save_dir + '/output_decoding.json', 'w') as f:
+    with open(get_path('output_decoding.json'), 'w') as f:
         json.dump(output_decoding, f)
 
-    model.save(save_dir + '/model.h5')
+    model.save(get_path('model.h5'))
 
 
 def create_model(

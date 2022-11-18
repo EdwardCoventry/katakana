@@ -1,7 +1,4 @@
-import re
-import os
-
-from . import model
+from . import model, config
 
 loaded_model = None
 input_encoding = None
@@ -10,20 +7,22 @@ output_encoding = None
 output_decoding = None
 
 
-def load_default_model():
+def load_default_model(version=None):
+
+    if version is None:
+        version = config.version
+
     global loaded_model, input_encoding, input_decoding, output_encoding, output_decoding
 
-
-    print('loading model ...')
-    trained_model_dir = os.path.join(os.path.dirname(__file__), 'trained_models')
+    # print('loading model ...')
     loaded_model, input_encoding, input_decoding, output_encoding, output_decoding = \
-        model.load(save_dir=trained_model_dir)
-    print('model loaded ...')
+        model.load(save_dir='trained_models', version=version)
+    # print('model loaded ...')
 
 
-def to_katakana(text):
+def to_katakana(text, version=None):
     if loaded_model is None:
-        load_default_model()
+        load_default_model(version=version)
 
     return model.to_katakana(
         text=text.lower(),

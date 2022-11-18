@@ -1,29 +1,27 @@
 from __future__ import print_function
 
-import pandas as pd
-
-from katakana import model, encoding
+from katakana import model, encoding, config, loadcsvdata
 
 # ===============================================================
 
 print('Loading the model...')
 
-testing_model, input_encoding, input_decoding, output_encoding, output_decoding = model.load()
+testing_model, input_encoding, input_decoding, output_encoding, output_decoding = model.load(config.version)
 
 # ===============================================================
 
 print('Evaluating the model on random testing dataset...')
 
-data = pd.read_csv('./dataset/data.csv')
+data = loadcsvdata.load_csvs()
 data = data.sample(frac=1, random_state=11)
 
-data_input = [s.lower() for s in data[0]]
-data_output = [s.lower() for s in data[1]]
+data_input = data['english']
+data_output = data['katakana']
 
 data_size = len(data)
 test_split = int(data_size*10/100)
 
-test_input  = data_input[:test_split]
+test_input = data_input[:test_split]
 test_output = data_output[:test_split]
 
 encoded_testing_input = encoding.transform(input_encoding, test_input)
