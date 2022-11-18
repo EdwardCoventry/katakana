@@ -10,7 +10,7 @@ from . import encoding, getconfig
 def load(version=None):
 
     version_dir = os.path.join('trained_models', version)
-    get_path = lambda filename: os.path.join(version_dir, filename)
+    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
     # Read YAML file
     config = getconfig.get_config(version_dir)
@@ -30,7 +30,7 @@ def load(version=None):
 def save(model, input_encoding, input_decoding, output_encoding, output_decoding, config):
 
     version_dir = os.path.join('trained_models', config['version'])
-    get_path = lambda filename: os.path.join(version_dir, filename)
+    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
     with open(get_path('input_encoding.json'), 'w') as f:
         json.dump(input_encoding, f)
