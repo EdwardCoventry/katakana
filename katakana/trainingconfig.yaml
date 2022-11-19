@@ -1,7 +1,8 @@
 
 
-version: test2
+version: build1
 vector_length: 32
 convert_to_lower: False
+epochs: 100
 
 
