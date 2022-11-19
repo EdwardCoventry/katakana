@@ -50,11 +50,11 @@ validation_encoder_input, validation_decoder_input, validation_decoder_output = 
 """  delete folder if it exists, and (re)make it 
      also make checkpoints folder  """
 version_dir = os.path.join('katakana/trained_models', training_config['version'])
-if os.path.exists(version_dir):
-    shutil.rmtree(version_dir)
-os.mkdir(version_dir)
+if not os.path.exists(version_dir):
+    os.mkdir(version_dir)
 checkpoints_dir = os.path.join(version_dir, 'checkpoints')
-os.mkdir(checkpoints_dir)
+if not os.path.exists(checkpoints_dir):
+    os.mkdir(checkpoints_dir)
 
 # Building the model ----------------------
 seq2seq_model = model.create_model(
