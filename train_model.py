@@ -77,6 +77,16 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     save_best_only=False,
     verbose=1)
 
+model.save_config(
+    config=training_config)
+
+model.save_encodings(
+    input_encoding=input_encoding,
+    input_decoding=input_decoding,
+    output_encoding=output_encoding,
+    output_decoding=output_decoding,
+    config=training_config)
+
 seq2seq_model.fit(
     x=[training_encoder_input, training_decoder_input],
     y=[training_decoder_output],
@@ -84,13 +94,9 @@ seq2seq_model.fit(
         [validation_encoder_input, validation_decoder_input], [validation_decoder_output]),
     verbose=2,
     batch_size=64,
-    epochs=2,
+    epochs=training_config['epochs'],
     callbacks=[model_checkpoint_callback, early_stopping_callback])
 
-model.save(
+model.save_model(
     model=seq2seq_model,
-    input_encoding=input_encoding,
-    input_decoding=input_decoding,
-    output_encoding=output_encoding,
-    output_decoding=output_decoding,
     config=training_config)

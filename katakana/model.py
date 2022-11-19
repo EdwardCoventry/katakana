@@ -27,7 +27,13 @@ def load(version=None):
     return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
 
-def save(model, input_encoding, input_decoding, output_encoding, output_decoding, config):
+def save_config(config):
+    """  save a copy of the config file  """
+    version_dir = os.path.join('trained_models', config['version'])
+    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
+    getconfig.write_model_config(config, get_path(''))
+
+def save_encodings(input_encoding, input_decoding, output_encoding, output_decoding, config):
 
     version_dir = os.path.join('trained_models', config['version'])
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
@@ -44,11 +50,13 @@ def save(model, input_encoding, input_decoding, output_encoding, output_decoding
     with open(get_path('output_decoding.json'), 'w') as f:
         json.dump(output_decoding, f)
 
-    model.save(get_path('model.h5'))
+def save_model(model, config):
 
-    """  save a copy of the config file  """
-    # Write YAML file
-    getconfig.write_model_config(config, version_dir)
+    version_dir = os.path.join('trained_models', config['version'])
+    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
+
+    model.save_model(get_path('model.h5'))
+
 
 
 def create_model(
