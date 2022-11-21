@@ -15,7 +15,7 @@ testing_model, input_encoding, input_decoding, output_encoding, output_decoding,
 
 print('Evaluating the model on random testing dataset...')
 
-data = loadcsvdata.load_csvs()
+data = loadcsvdata.load_csvs(config)
 data = data.sample(frac=1, random_state=11)
 
 data_input = data['english']

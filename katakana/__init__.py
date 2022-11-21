@@ -1,6 +1,6 @@
 import unidecode
 
-from . import getconfig, model
+from . import formattext, getconfig, model
 
 loaded_model = None
 input_encoding = None
@@ -28,10 +28,7 @@ def to_katakana(text, version=None):
     if loaded_model is None:
         load_default_model(version=version)
 
-    if model_config['convert_to_unidecode']:
-        text = unidecode.unidecode(text)
-    if model_config['convert_to_lower']:
-        text = text.lower()
+    text = formattext.format_text(text, model_config['convert_to_lower'], model_config['convert_to_unidecode'])
 
     return model.to_katakana(
         text=text,
