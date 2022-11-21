@@ -27,8 +27,8 @@ test_split = int(data_size*10/100)
 test_input = data_input[:test_split]
 test_output = data_output[:test_split]
 
-encoded_testing_input = encoding.transform(input_encoding, test_input, config['vector_length'], config['convert_to_lower'])
-encoded_testing_output = encoding.transform(output_encoding, test_output, config['vector_length'], config['convert_to_lower'])
+encoded_testing_input = encoding.transform(input_encoding, test_input, config)
+encoded_testing_output = encoding.transform(output_encoding, test_output, config)
 
 test_encoder_input, test_decoder_input, test_decoder_output = \
     model.create_model_data(encoded_testing_input, encoded_testing_output, len(output_decoding) + 1)
@@ -39,11 +39,10 @@ testing_model.evaluate(x=[test_encoder_input, test_decoder_input], y=test_decode
 
 print('Evaluating the model on random names...')
 
+config = model.load_config(use_model_config['version'])
 
 def to_katakan(english_text):
-    return model.to_katakana(english_text, testing_model, input_encoding, output_decoding,
-                             input_length=config['vector_length'], output_length=config['vector_length'],
-                             convert_to_lower=config['convert_to_lower'])
+    return model.to_katakana(english_text, testing_model, input_encoding, output_decoding, config=config)
 
 
 print(data_input[0], to_katakan(data_input[0]))

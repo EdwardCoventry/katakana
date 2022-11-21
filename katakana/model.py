@@ -1,19 +1,31 @@
 import json
 import os
+import pathlib
+
 import numpy as np
+import unidecode
 from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
 from keras.models import Model, load_model
 
 from . import encoding, getconfig
 
 
-def load(version=None):
+def load_config(version=None):
 
-    version_dir = os.path.join('trained_models', version)
-    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
+    get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', version, filename)
 
     # Read YAML file
-    config = getconfig.get_config(version_dir)
+    config = getconfig.get_model_config(get_path(''))
+
+    return config
+
+
+def load(version=None, from_checkpoint_path=None):
+
+    get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', version, filename)
+
+    # Read YAML file
+    config = load_config(version)
 
     input_encoding = json.load(open(get_path('input_encoding.json')))
     input_decoding = json.load(open(get_path('input_decoding.json')))
@@ -23,7 +35,13 @@ def load(version=None):
     output_decoding = json.load(open(get_path('output_decoding.json')))
     output_decoding = {int(k): v for k, v in output_decoding.items()}
 
-    model = load_model(get_path('model.h5'))
+    if from_checkpoint_path:
+        model_path = from_checkpoint_path
+    else:
+        model_path = get_path(f"model.{config['file_type']}")
+
+    model = load_model(model_path)
+
     return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
 
@@ -55,7 +73,7 @@ def save_model(model, config):
     version_dir = os.path.join('trained_models', config['version'])
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
-    model.save_model(get_path('model.h5'))
+    model.save(get_path('model.hdf5'))
 
 
 
@@ -99,18 +117,18 @@ def create_model_data(
 # =====================================================================
 
 
-def to_katakana(text, model, input_encoding, output_decoding,
-                input_length, output_length,
-                convert_to_lower):
+def to_katakana(text, model, input_encoding, output_decoding, config):
 
-    if convert_to_lower:
+    if config['convert_to_unidecode']:
+        text = unidecode.unidecode(text)
+    if config['convert_to_lower']:
         text = text.lower()
 
-    encoder_input = encoding.transform(input_encoding, [text], input_length, convert_to_lower)
-    decoder_input = np.zeros(shape=(len(encoder_input), output_length))
+    encoder_input = encoding.transform(input_encoding, [text], config)
+    decoder_input = np.zeros(shape=(len(encoder_input), config['vector_length']))
     decoder_input[:, 0] = encoding.CHAR_CODE_START
-    for i in range(1, output_length):
-        output = model.predict([encoder_input, decoder_input]).argmax(axis=2)
+    for i in range(1, config['vector_length']):
+        output = model.predict([encoder_input, decoder_input], verbose=0).argmax(axis=2)
         decoder_input[:, i] = output[:, i]
 
     decoder_output = decoder_input

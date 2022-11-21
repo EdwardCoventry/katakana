@@ -1,0 +1,6 @@
+vector_length: 20
+convert_to_lower: True
+convert_to_unidecode: False
+epochs: 30
+version: build3
+file_type: h5

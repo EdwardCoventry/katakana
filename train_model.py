@@ -1,5 +1,8 @@
 from __future__ import print_function
 
+import glob
+import pathlib
+import re
 import shutil
 import warnings
 
@@ -31,13 +34,13 @@ validation_output = data_output[train_split_index:]
 
 # Encoding the dataset ----------------------
 
-input_encoding, input_decoding, input_dict_size = encoding.build_characters_encoding(data_input, training_config['convert_to_lower'])
-output_encoding, output_decoding, output_dict_size = encoding.build_characters_encoding(data_output, training_config['convert_to_lower'])
+input_encoding, input_decoding, input_dict_size = encoding.build_characters_encoding(data_input, training_config)
+output_encoding, output_decoding, output_dict_size = encoding.build_characters_encoding(data_output, training_config)
 
-encoded_training_input = encoding.transform(input_encoding, training_input, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
-encoded_training_output = encoding.transform(output_encoding, training_output, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
-encoded_validation_input = encoding.transform(input_encoding, validation_input, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
-encoded_validation_output = encoding.transform(output_encoding, validation_output, vector_size=training_config['vector_length'], convert_to_lower=training_config['convert_to_lower'])
+encoded_training_input = encoding.transform(input_encoding, training_input, training_config)
+encoded_training_output = encoding.transform(output_encoding, training_output, training_config)
+encoded_validation_input = encoding.transform(input_encoding, validation_input, training_config)
+encoded_validation_output = encoding.transform(output_encoding, validation_output, training_config)
 
 # Building the model ----------------------
 
@@ -49,19 +52,41 @@ validation_encoder_input, validation_decoder_input, validation_decoder_output = 
 
 """  delete folder if it exists, and (re)make it 
      also make checkpoints folder  """
-version_dir = os.path.join('katakana/trained_models', training_config['version'])
-if not os.path.exists(version_dir):
+version_dir = pathlib.Path('katakana', 'trained_models', training_config['version'])
+if version_dir.exists():
+    _training_config = getconfig.get_model_config(pathlib.Path('trained_models', training_config['version']))
+    _training_config['epochs'] = training_config['epochs']
+    training_config = _training_config
+else:
     os.mkdir(version_dir)
-checkpoints_dir = os.path.join(version_dir, 'checkpoints')
-if not os.path.exists(checkpoints_dir):
-    os.mkdir(checkpoints_dir)
+checkpoints_dir = version_dir.joinpath('checkpoints')
+if checkpoints_dir.exists():
+    """  just use most recent checkpoint, since epoch index doesnt get saved between runs  """
+    latest_checkpoint = max(checkpoints_dir.glob("*-*.hdf5"),
+                            key=lambda path: (
+                            # int(re.match('.*([0-9]+)-.*.hdf5', str(path)).group(1)),
+                            os.path.getmtime(path)))
+    seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(training_config['version'],
+                                                                                                         from_checkpoint_path=latest_checkpoint)
+else:
+    checkpoints_dir.mkdir()
+    latest_checkpoint = None
+    # Building the model ----------------------
+    seq2seq_model = model.create_model(
+        input_dict_size=input_dict_size,
+        output_dict_size=output_dict_size,
+        input_length=training_config['vector_length'],
+        output_length=training_config['vector_length'])
 
-# Building the model ----------------------
-seq2seq_model = model.create_model(
-    input_dict_size=input_dict_size,
-    output_dict_size=output_dict_size,
-    input_length=training_config['vector_length'],
-    output_length=training_config['vector_length'])
+    model.save_config(
+        config=training_config)
+
+    model.save_encodings(
+        input_encoding=input_encoding,
+        input_decoding=input_decoding,
+        output_encoding=output_encoding,
+        output_decoding=output_decoding,
+        config=training_config)
 
 """  stop when ceases to improve  """
 early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
@@ -70,22 +95,12 @@ early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
                                                         )
 """  save all checkpoints  """
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-    filepath=os.path.join(checkpoints_dir, '{epoch:02d}-{val_loss:.2f}.hdf5'),
-    save_weights_only=True,
+    filepath=checkpoints_dir.joinpath('{epoch:02d}-{val_loss:.2f}.hdf5'),
+    save_weights_only=False,
     monitor='val_accuracy',
     mode='max',
     save_best_only=False,
     verbose=1)
-
-model.save_config(
-    config=training_config)
-
-model.save_encodings(
-    input_encoding=input_encoding,
-    input_decoding=input_decoding,
-    output_encoding=output_encoding,
-    output_decoding=output_decoding,
-    config=training_config)
 
 seq2seq_model.fit(
     x=[training_encoder_input, training_decoder_input],

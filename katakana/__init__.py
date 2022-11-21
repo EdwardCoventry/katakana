@@ -1,3 +1,4 @@
+import unidecode
 
 from . import getconfig, model
 
@@ -27,6 +28,8 @@ def to_katakana(text, version=None):
     if loaded_model is None:
         load_default_model(version=version)
 
+    if model_config['convert_to_unidecode']:
+        text = unidecode.unidecode(text)
     if model_config['convert_to_lower']:
         text = text.lower()
 
@@ -35,7 +38,5 @@ def to_katakana(text, version=None):
         model=loaded_model,
         input_encoding=input_encoding,
         output_decoding=output_decoding,
-        input_length=model_config['vector_length'],
-        output_length=model_config['vector_length'],
-        convert_to_lower=model_config['convert_to_lower']
+        config=model_config
     )

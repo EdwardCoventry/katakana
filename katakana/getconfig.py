@@ -1,12 +1,14 @@
 import os.path
+import pathlib
+
 import yaml
 
 
-root_path = os.path.join(__file__, '..')
+root_path = pathlib.Path(__file__).parent
 
 def get_config(path='.', name='config.yaml'):
 	"""  Read YAML file """
-	with open(os.path.join(root_path, path, name), 'r') as stream:
+	with open(root_path.joinpath(path, name), 'r') as stream:
 		return yaml.safe_load(stream)
 
 def write_config(config, path, name='config.yaml'):

@@ -1,8 +1,8 @@
 
 
-version: build1
-vector_length: 32
-convert_to_lower: False
-epochs: 100
-
-
+version: build3
+vector_length: 20
+convert_to_lower: True
+convert_to_unidecode: True
+epochs: 10
+file_type: hdf5
