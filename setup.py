@@ -1,4 +1,5 @@
 from setuptools import setup
+import os
 
 setup(
     name='katakana',
@@ -7,7 +8,7 @@ setup(
     license='MIT',
     url='http://github.com/wanasit/katakana',
     author='wanasit',
-    package_data={'katakana': ['usemodelconfig.yaml']},
-    package_data={'': ['usemodelconfig.yaml']},
+    package_data={'katakana': ['usemodelconfig.yaml',
+                               os.path.join('trained models', '*')]},
     install_requires=['keras', 'h5py', 'numpy'],
 )
