@@ -9,7 +9,6 @@ setup(
     url='http://github.com/wanasit/katakana',
     author='wanasit',
     packages=['katakana'],
-    package_data={'katakana': ['usemodelconfig.yaml',
-                               "trained models": ["*"]]},
+    package_data={'katakana': ['usemodelconfig.yaml', 'trained models/**/*']},
     install_requires=['keras', 'h5py', 'numpy'],
 )
