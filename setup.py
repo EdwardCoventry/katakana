@@ -10,6 +10,6 @@ setup(
     author='wanasit',
     packages=['katakana'],
     package_data={'katakana': ['usemodelconfig.yaml',
-                               os.path.join('trained models', '*')]},
+                               "trained models": ["*"]]},
     install_requires=['keras', 'h5py', 'numpy'],
 )
