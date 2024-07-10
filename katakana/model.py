@@ -11,8 +11,7 @@ from . import encoding, getconfig
 
 
 def load_config(version=None):
-
-    get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', version, filename)
+    get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', str(version), filename)
 
     # Read YAML file
     config = getconfig.get_model_config(get_path(''))
@@ -21,8 +20,7 @@ def load_config(version=None):
 
 
 def load(version=None, from_checkpoint_path=None):
-
-    get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', version, filename)
+    get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', str(version), filename)
 
     # Read YAML file
     config = load_config(version)
@@ -47,13 +45,13 @@ def load(version=None, from_checkpoint_path=None):
 
 def save_config(config):
     """  save a copy of the config file  """
-    version_dir = os.path.join('trained_models', config['version'])
+    version_dir = os.path.join('trained_models', str(config['version']))
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
     getconfig.write_model_config(config, get_path(''))
 
-def save_encodings(input_encoding, input_decoding, output_encoding, output_decoding, config):
 
-    version_dir = os.path.join('trained_models', config['version'])
+def save_encodings(input_encoding, input_decoding, output_encoding, output_decoding, config):
+    version_dir = os.path.join('trained_models', str(config['version']))
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
     with open(get_path('input_encoding.json'), 'w') as f:
@@ -68,13 +66,12 @@ def save_encodings(input_encoding, input_decoding, output_encoding, output_decod
     with open(get_path('output_decoding.json'), 'w') as f:
         json.dump(output_decoding, f)
 
-def save_model(model, config):
 
-    version_dir = os.path.join('trained_models', config['version'])
+def save_model(model, config):
+    version_dir = os.path.join('trained_models', str(config['version']))
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
-    model.save(get_path('model.hdf5'))
-
+    model.save(get_path(f"model.{config['file_type']}"))
 
 
 def create_model(
@@ -82,7 +79,6 @@ def create_model(
         output_dict_size,
         input_length,
         output_length):
-
     encoder_input = Input(shape=(input_length,))
     decoder_input = Input(shape=(output_length,))
 
@@ -103,7 +99,6 @@ def create_model_data(
         encoded_input,
         encoded_output,
         output_dict_size):
-
     encoder_input = encoded_input
 
     decoder_input = np.zeros_like(encoded_output)
@@ -114,11 +109,11 @@ def create_model_data(
 
     return encoder_input, decoder_input, decoder_output
 
+
 # =====================================================================
 
 
 def to_katakana(text, model, input_encoding, output_decoding, config):
-
     if config['convert_to_unidecode']:
         text = unidecode.unidecode(text)
     if config['convert_to_lower']:

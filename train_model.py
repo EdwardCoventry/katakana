@@ -25,12 +25,13 @@ data_output = data['katakana']
 
 data_size = len(data)
 
-train_split_index = int(data_size*90/100)
+train_split_index = int(data_size * 90 / 100)
 
 training_input = data_input[:train_split_index]
 training_output = data_output[:train_split_index]
 validation_input = data_input[train_split_index:]
 validation_output = data_output[train_split_index:]
+
 
 def get_encoding_length(encoding):
     """  probably the extra 1 is for blank chars  """
@@ -41,22 +42,23 @@ def get_encoding_length(encoding):
 
 """  delete folder if it exists, and (re)make it 
      also make checkpoints folder  """
-version_dir = pathlib.Path('katakana', 'trained_models', training_config['version'])
+version_dir = pathlib.Path('katakana', 'trained_models', str(training_config['version']))
 if version_dir.exists():
-    _training_config = getconfig.get_model_config(pathlib.Path('trained_models', training_config['version']))
+    _training_config = getconfig.get_model_config(pathlib.Path('trained_models', str(training_config['version'])))
     _training_config['epochs'] = training_config['epochs']
     training_config = _training_config
 else:
     os.mkdir(version_dir)
 checkpoints_dir = version_dir.joinpath('checkpoints')
-if checkpoints_dir.exists() and any(checkpoints_dir.glob("*-*.hdf5")):
+if checkpoints_dir.exists() and any(checkpoints_dir.glob(f"*-*.{training_config['file_type']}")):
     """  just use most recent checkpoint, since epoch index doesnt get saved between runs  """
-    latest_checkpoint = max(checkpoints_dir.glob("*-*.hdf5"),
+    latest_checkpoint = max(checkpoints_dir.glob(f"*-*.{training_config['file_type']}"),
                             key=lambda path: (
-                            # int(re.match('.*([0-9]+)-.*.hdf5', str(path)).group(1)),
-                            os.path.getmtime(path)))
-    seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(training_config['version'],
-                                                                                                         from_checkpoint_path=latest_checkpoint)
+                                # int(re.match('.*([0-9]+)-.*.hdf5', str(path)).group(1)),
+                                os.path.getmtime(path)))
+    seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(
+        training_config['version'],
+        from_checkpoint_path=latest_checkpoint)
 
     input_encoding_length = get_encoding_length(input_encoding)
     output_encoding_length = get_encoding_length(output_encoding)
@@ -89,19 +91,16 @@ else:
         output_decoding=output_decoding,
         config=training_config)
 
-
 encoded_training_input = encoding.transform(input_encoding, training_input, training_config)
 encoded_training_output = encoding.transform(output_encoding, training_output, training_config)
 encoded_validation_input = encoding.transform(input_encoding, validation_input, training_config)
 encoded_validation_output = encoding.transform(output_encoding, validation_output, training_config)
-
 
 training_encoder_input, training_decoder_input, training_decoder_output = \
     model.create_model_data(encoded_training_input, encoded_training_output, output_encoding_length)
 
 validation_encoder_input, validation_decoder_input, validation_decoder_output = \
     model.create_model_data(encoded_validation_input, encoded_validation_output, output_encoding_length)
-
 
 """  stop when ceases to improve  """
 early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
@@ -110,13 +109,12 @@ early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
                                                         )
 """  save all checkpoints  """
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-    filepath=checkpoints_dir.joinpath('{epoch:02d}-{val_loss:.2f}.hdf5'),
+    filepath=checkpoints_dir.joinpath('{epoch:02d}-{val_loss:.2f}' + f".{training_config['file_type']}"),
     save_weights_only=False,
     monitor='val_accuracy',
     mode='max',
     save_best_only=False,
     verbose=1)
-
 
 seq2seq_model.fit(
     x=[training_encoder_input, training_decoder_input],
