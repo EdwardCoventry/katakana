@@ -4,13 +4,14 @@ import pathlib
 
 import numpy as np
 import unidecode
-from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense, GRU
+from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
 from keras.models import Model, load_model
 
 from . import encoding, getconfig
 
 
 def load_config(version=None):
+
     get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', version, filename)
 
     # Read YAML file
@@ -20,6 +21,7 @@ def load_config(version=None):
 
 
 def load(version=None, from_checkpoint_path=None):
+
     get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', version, filename)
 
     # Read YAML file
@@ -38,8 +40,7 @@ def load(version=None, from_checkpoint_path=None):
     else:
         model_path = get_path(f"model.{config['file_type']}")
 
-    # Ensure custom layers are registered when loading the model
-    model = load_model(model_path, custom_objects={'GRU': GRU})
+    model = load_model(model_path)
 
     return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
@@ -50,8 +51,8 @@ def save_config(config):
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
     getconfig.write_model_config(config, get_path(''))
 
-
 def save_encodings(input_encoding, input_decoding, output_encoding, output_decoding, config):
+
     version_dir = os.path.join('trained_models', config['version'])
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
@@ -67,12 +68,13 @@ def save_encodings(input_encoding, input_decoding, output_encoding, output_decod
     with open(get_path('output_decoding.json'), 'w') as f:
         json.dump(output_decoding, f)
 
-
 def save_model(model, config):
+
     version_dir = os.path.join('trained_models', config['version'])
     get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
 
     model.save(get_path('model.hdf5'))
+
 
 
 def create_model(
@@ -80,6 +82,7 @@ def create_model(
         output_dict_size,
         input_length,
         output_length):
+
     encoder_input = Input(shape=(input_length,))
     decoder_input = Input(shape=(output_length,))
 
@@ -100,6 +103,7 @@ def create_model_data(
         encoded_input,
         encoded_output,
         output_dict_size):
+
     encoder_input = encoded_input
 
     decoder_input = np.zeros_like(encoded_output)
@@ -110,11 +114,11 @@ def create_model_data(
 
     return encoder_input, decoder_input, decoder_output
 
-
 # =====================================================================
 
 
 def to_katakana(text, model, input_encoding, output_decoding, config):
+
     if config['convert_to_unidecode']:
         text = unidecode.unidecode(text)
     if config['convert_to_lower']:
