@@ -1,8 +1,8 @@
 
 
-version: test5
+version: build4
 vector_length: 20
 convert_to_lower: True
 convert_to_unidecode: True
-epochs: 10
+epochs: 128
 file_type: hdf5
