@@ -11,7 +11,7 @@ config = None
 use_model_config = None
 
 
-def load_default_model(version=None, checkpoint=None):
+def load_default_model(version=None, checkpoint=None, use_tflite=True):
     global loaded_model, input_encoding, input_decoding, output_encoding, output_decoding, model_config, use_model_config
 
     if version is None:
@@ -25,12 +25,12 @@ def load_default_model(version=None, checkpoint=None):
         checkpoint = use_model_config['checkpoint']
 
     loaded_model, input_encoding, input_decoding, output_encoding, output_decoding, model_config = \
-        model.load(version=version, checkpoint=checkpoint)
+        model.load(version=version, checkpoint=checkpoint, use_tflite=use_tflite)
 
 
-def to_katakana(text, version=None, checkpoint=None):
+def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
     if loaded_model is None:
-        load_default_model(version=version, checkpoint=checkpoint)
+        load_default_model(version=version, checkpoint=checkpoint, use_tflite=use_tflite)
 
     text = formattext.format_text(text, model_config['convert_to_lower'], model_config['convert_to_unidecode'])
 

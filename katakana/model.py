@@ -7,7 +7,7 @@ import unidecode
 from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
 from keras.models import Model, load_model
 
-from . import encoding, getconfig
+from . import encoding, getconfig, converttotflite
 
 
 def load_config(version=None):
@@ -19,12 +19,13 @@ def load_config(version=None):
     return config
 
 
-def load(version=None, checkpoint=None, from_path=None):
+def load(version=None, checkpoint=None, from_path=None, use_tflite=False):
     assert not (checkpoint and from_path), "either pass the checkpoint or the path"
 
     get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', str(version), filename)
+    tflite_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', str(version), 'tflite',
+                                                                          filename)
 
-    # Read YAML file
     config = load_config(version)
 
     input_encoding = json.load(open(get_path('input_encoding.json')))
@@ -41,12 +42,17 @@ def load(version=None, checkpoint=None, from_path=None):
         checkpoint_path = get_path('checkpoints')
         checkpoint = str(checkpoint).zfill(2)
         model_path = max(checkpoint_path.glob(f"{checkpoint}-*.{config['file_type']}"),
-                         key=lambda path: (
-                             os.path.getmtime(path)))
+                         key=lambda path: os.path.getmtime(path))
     else:
         model_path = get_path(f"model.{config['file_type']}")
 
-    model = load_model(model_path)
+    if use_tflite:
+        tflite_model_path = tflite_path(f"{model_path.stem}.tflite")
+        if not tflite_model_path.exists():
+            converttotflite.convert_to_tflite(load_model(model_path), tflite_model_path)
+        model = converttotflite.TFLiteModelWrapper(str(tflite_model_path))
+    else:
+        model = load_model(model_path)
 
     return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
