@@ -19,7 +19,9 @@ def load_config(version=None):
     return config
 
 
-def load(version=None, from_checkpoint_path=None):
+def load(version=None, checkpoint=None, from_path=None):
+    assert not (checkpoint and from_path), "either pass the checkpoint or the path"
+
     get_path = lambda filename: pathlib.Path(__file__).parent.joinpath('trained_models', str(version), filename)
 
     # Read YAML file
@@ -33,8 +35,14 @@ def load(version=None, from_checkpoint_path=None):
     output_decoding = json.load(open(get_path('output_decoding.json')))
     output_decoding = {int(k): v for k, v in output_decoding.items()}
 
-    if from_checkpoint_path:
-        model_path = from_checkpoint_path
+    if from_path:
+        model_path = from_path
+    elif checkpoint:
+        checkpoint_path = get_path('checkpoints')
+        checkpoint = str(checkpoint).zfill(2)
+        model_path = max(checkpoint_path.glob(f"{checkpoint}-*.{config['file_type']}"),
+                         key=lambda path: (
+                             os.path.getmtime(path)))
     else:
         model_path = get_path(f"model.{config['file_type']}")
 
