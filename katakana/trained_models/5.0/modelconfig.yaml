@@ -1,0 +1,6 @@
+convert_to_lower: true
+convert_to_unidecode: true
+epochs: 256
+file_type: keras
+vector_length: 16
+version: 5.0
