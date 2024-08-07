@@ -54,8 +54,7 @@ if checkpoints_dir.exists() and any(checkpoints_dir.glob(f"*-*.{training_config[
                                 # int(re.match('.*([0-9]+)-.*.hdf5', str(path)).group(1)),
                                 os.path.getmtime(path)))
     seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(
-        training_config['version'],
-        from_checkpoint_path=latest_checkpoint)
+        training_config['version'], from_path=latest_checkpoint)
 
     input_encoding_length = get_encoding_length(input_encoding)
     output_encoding_length = get_encoding_length(output_encoding)
@@ -113,15 +112,17 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     save_best_only=False,
     verbose=1)
 
+# Model Training
 seq2seq_model.fit(
     x=[training_encoder_input, training_decoder_input],
-    y=[training_decoder_output],
+    y=training_decoder_output,
     validation_data=(
-        [validation_encoder_input, validation_decoder_input], [validation_decoder_output]),
+        [validation_encoder_input, validation_decoder_input], validation_decoder_output),
     verbose=2,
     batch_size=64,
     epochs=training_config['epochs'],
-    callbacks=[model_checkpoint_callback, early_stopping_callback])
+    callbacks=[model_checkpoint_callback, early_stopping_callback]
+)
 
 model.save_model(
     model=seq2seq_model,

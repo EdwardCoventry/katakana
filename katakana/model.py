@@ -4,8 +4,12 @@ import pathlib
 
 import numpy as np
 import unidecode
+import tensorflow as tf
 from keras.layers import Input, Embedding, LSTM, TimeDistributed, Dense
 from keras.models import Model, load_model
+
+# Enable eager execution (for TensorFlow compatibility)
+tf.compat.v1.enable_eager_execution()
 
 from . import encoding, getconfig, converttotflite
 
@@ -88,26 +92,32 @@ def save_model(model, config):
     model.save(get_path(f"model.{config['file_type']}"))
 
 
-def create_model(
-        input_dict_size,
-        output_dict_size,
-        input_length,
-        output_length):
+def create_model(input_dict_size, output_dict_size, input_length, output_length):
+    # Encoder
     encoder_input = Input(shape=(input_length,))
+    encoder_embedding = Embedding(input_dict_size, 64, mask_zero=True)(encoder_input)
+    encoder_output, state_h, state_c = LSTM(64, return_state=True)(encoder_embedding)
+    encoder_states = [state_h, state_c]
+
+    # Decoder
     decoder_input = Input(shape=(output_length,))
+    decoder_embedding = Embedding(output_dict_size, 64, mask_zero=True)(decoder_input)
+    decoder_lstm = LSTM(64, return_sequences=True, return_state=True)
+    decoder_output, _, _ = decoder_lstm(decoder_embedding, initial_state=encoder_states)
+    decoder_dense = TimeDistributed(Dense(output_dict_size, activation='softmax'))
+    decoder_output = decoder_dense(decoder_output)
 
-    encoder = Embedding(input_dict_size, 64, input_length=input_length, mask_zero=True)(encoder_input)
-    encoder = LSTM(64, return_sequences=False)(encoder)
+    # Define the model
+    seq2seq_model = Model([encoder_input, decoder_input], decoder_output)
 
-    decoder = Embedding(output_dict_size, 64, input_length=output_length, mask_zero=True)(decoder_input)
-    decoder = LSTM(64, return_sequences=True)(decoder, initial_state=[encoder, encoder])
-    decoder = TimeDistributed(Dense(output_dict_size, activation="softmax"))(decoder)
+    # Correctly instantiate loss and metrics
+    my_loss = tf.keras.losses.CategoricalCrossentropy()
+    my_metric = tf.keras.metrics.CategoricalAccuracy()
 
-    model = Model(inputs=[encoder_input, decoder_input], outputs=[decoder])
-    model.compile(optimizer='adam', loss='categorical_crossentropy')
+    # Compile the model
+    seq2seq_model.compile(optimizer='adam', loss=my_loss, metrics=[my_metric])
 
-    return model
-
+    return seq2seq_model
 
 def create_model_data(
         encoded_input,
