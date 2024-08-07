@@ -8,3 +8,6 @@ matplotlib
 seaborn
 PyYAML
 protobuf==3.20.3
+unidecode
+pyyaml
+git+https://github.com/EdwardCoventry/unstdlib.py.git

@@ -1,4 +1,4 @@
-version: 5.0
+version: 6.0
 vector_length: 16
 convert_to_lower: True
 convert_to_unidecode: True
