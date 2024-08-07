@@ -1,6 +1,0 @@
-convert_to_lower: true
-convert_to_unidecode: true
-epochs: 128
-file_type: hdf5
-vector_length: 20
-version: build4
