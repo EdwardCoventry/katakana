@@ -1,9 +1,6 @@
 from __future__ import print_function
 
-import glob
 import pathlib
-import re
-import shutil
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
