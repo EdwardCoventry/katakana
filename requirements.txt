@@ -10,4 +10,5 @@ PyYAML
 protobuf==3.20.3
 unidecode
 pyyaml
+colorama
 git+https://github.com/EdwardCoventry/unstdlib.py.git

@@ -3,6 +3,8 @@ from __future__ import print_function
 import pathlib
 import warnings
 
+import katakana.model.modeldata
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import os.path
@@ -75,7 +77,8 @@ else:
         input_dict_size=input_encoding_length,
         output_dict_size=output_encoding_length,
         input_length=training_config['vector_length'],
-        output_length=training_config['vector_length'])
+        output_length=training_config['vector_length']
+    )
 
     model.save_config(
         config=training_config)
@@ -93,10 +96,10 @@ encoded_validation_input = encoding.transform(input_encoding, validation_input, 
 encoded_validation_output = encoding.transform(output_encoding, validation_output, training_config)
 
 training_encoder_input, training_decoder_input, training_decoder_output = \
-    model.create_model_data(encoded_training_input, encoded_training_output, output_encoding_length)
+    katakana.model.modeldata.create_model_data(encoded_training_input, encoded_training_output, output_encoding_length)
 
 validation_encoder_input, validation_decoder_input, validation_decoder_output = \
-    model.create_model_data(encoded_validation_input, encoded_validation_output, output_encoding_length)
+    katakana.model.modeldata.create_model_data(encoded_validation_input, encoded_validation_output, output_encoding_length)
 
 """  stop when ceases to improve  """
 early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
