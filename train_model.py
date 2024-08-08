@@ -119,37 +119,16 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     save_best_only=False,
     verbose=1)
 
-
-class TQDMCallback(keras.callbacks.Callback):
-    def __init__(self):
-        super().__init__()
-        self.progbar = None
-
-    def on_epoch_begin(self, epoch, logs=None):
-        self.progbar = tqdm.tqdm(total=self.params['steps'],
-                                 desc=f'Epoch {epoch + 1}/{self.params["epochs"]}',
-                                 unit='step')
-
-    def on_batch_end(self, batch, logs=None):
-        self.progbar.update(1)
-        self.progbar.set_postfix(loss=logs.get('loss'), accuracy=logs.get('accuracy'))
-
-    def on_epoch_end(self, epoch, logs=None):
-        self.progbar.close()
-
-
-tqdm_callback = TQDMCallback()
-
 # Model Training
 seq2seq_model.fit(
     x=[training_encoder_input, training_decoder_input],
     y=training_decoder_output,
     validation_data=(
         [validation_encoder_input, validation_decoder_input], validation_decoder_output),
-    verbose=2,
+    verbose=1,
     batch_size=64,
     epochs=training_config['epochs'],
-    callbacks=[model_checkpoint_callback, early_stopping_callback, tqdm_callback]
+    callbacks=[model_checkpoint_callback, early_stopping_callback]
 )
 
 model.save_model(
