@@ -3,8 +3,6 @@ from __future__ import print_function
 import pathlib
 import warnings
 
-import tqdm
-
 import katakana.model.modeldata
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -42,8 +40,8 @@ def get_encoding_length(encoding):
 
 # Building the model ----------------------
 
-"""  delete folder if it exists, and (re)make it 
-     also make checkpoints folder  """
+# delete folder if it exists, and (re)make it
+#      also make checkpoints folder
 version_dir = pathlib.Path('katakana', 'trained_models', str(training_config['version']))
 if version_dir.exists():
     _training_config = getconfig.get_model_config(pathlib.Path('trained_models', str(training_config['version'])))
@@ -105,14 +103,14 @@ validation_encoder_input, validation_decoder_input, validation_decoder_output = 
     katakana.model.modeldata.create_model_data(encoded_validation_input, encoded_validation_output,
                                                output_encoding_length)
 
-"""  stop when ceases to improve  """
+# stop when ceases to improve (supposedly)
 early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
                                                         patience=3,
                                                         restore_best_weights=True
                                                         )
-"""  save all checkpoints  """
+# save all checkpoints
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-    filepath=checkpoints_dir.joinpath('{epoch:02d}-{val_loss:.2f}' + f".{training_config['file_type']}"),
+    filepath=str(checkpoints_dir.joinpath('{epoch:02d}-{val_loss:.2f}' + f".{training_config['file_type']}")),
     save_weights_only=False,
     monitor='val_accuracy',
     mode='max',

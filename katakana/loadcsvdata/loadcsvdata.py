@@ -2,11 +2,8 @@ import glob
 import pandas as pd
 import re
 from katakana import formattext
-from colorama import Fore, init
+from colorama import Fore, Style
 from collections import Counter
-
-# Initialize colorama
-init(autoreset=True)
 
 
 def verify_data(data, file_name):
@@ -30,7 +27,7 @@ def verify_data(data, file_name):
 
         if contains_digits(english) or contains_digits(katakana):
             rows_with_digits.append(idx)
-            print(f"{Fore.YELLOW}  - Row {idx} with digits: English: {english}, Katakana: {katakana}")
+            print(f"{Fore.YELLOW}  - Row {idx} with digits: English: {english}, Katakana: {katakana}{Style.RESET_ALL}")
 
         if contains_kanji_or_hiragana(katakana) and not contains_katakana(katakana):
             incorrect_pairs.append(f"English: {english}, Katakana: {katakana} -> Katakana contains Kanji or Hiragana")
@@ -42,7 +39,7 @@ def verify_data(data, file_name):
             incorrect_pairs.append(f"English: {english}, Katakana: {katakana} -> Katakana contains English")
 
     if rows_with_digits:
-        print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)}")
+        print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)}{Style.RESET_ALL}")
         data.drop(rows_with_digits, inplace=True)
         data.reset_index(drop=True, inplace=True)
 

@@ -1,5 +1,5 @@
 import re
-from colorama import Fore
+from colorama import Fore, Style
 
 
 def verify_data(data, file_name):
@@ -23,7 +23,7 @@ def verify_data(data, file_name):
 
         if contains_digits(english) or contains_digits(katakana):
             rows_with_digits.append(idx)
-            print(f"{Fore.YELLOW}  - Row {idx} with digits: English: {english}, Katakana: {katakana}{Fore.RESET}")
+            print(f"{Fore.YELLOW}  - Row {idx} with digits: English: {english}, Katakana: {katakana}{Style.RESET_ALL}")
 
         if contains_kanji_or_hiragana(katakana) and not contains_katakana(katakana):
             incorrect_pairs.append(f"English: {english}, Katakana: {katakana} -> Katakana contains Kanji or Hiragana")
@@ -35,7 +35,7 @@ def verify_data(data, file_name):
             incorrect_pairs.append(f"English: {english}, Katakana: {katakana} -> Katakana contains English")
 
     if rows_with_digits:
-        print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)} {Fore.YELLOW}")
+        print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)} {Style.RESET_ALL}")
         data = data.drop(rows_with_digits).reset_index(drop=True)
 
     if incorrect_pairs:
