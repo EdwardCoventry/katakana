@@ -1,11 +1,5 @@
-import glob
-import pandas as pd
 import re
-from katakana import formattext
-from colorama import Fore, Style, init
-
-# Initialize colorama
-init(autoreset=True)
+from colorama import Fore
 
 def verify_data(data, file_name):
     incorrect_pairs = []
@@ -28,7 +22,7 @@ def verify_data(data, file_name):
 
         if contains_digits(english) or contains_digits(katakana):
             rows_with_digits.append(idx)
-            print(f"{Fore.YELLOW}  - Row {idx} with digits: English: {english}, Katakana: {katakana}")
+            print(f"{Fore.YELLOW}  - Row {idx} with digits: English: {english}, Katakana: {katakana}{Fore.RESET}")
 
         if contains_kanji_or_hiragana(katakana) and not contains_katakana(katakana):
             incorrect_pairs.append(f"English: {english}, Katakana: {katakana} -> Katakana contains Kanji or Hiragana")
@@ -41,8 +35,7 @@ def verify_data(data, file_name):
 
     if rows_with_digits:
         print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)}")
-        data.drop(rows_with_digits, inplace=True)
-        data.reset_index(drop=True, inplace=True)
+        data = data.drop(rows_with_digits).reset_index(drop=True)
 
     if incorrect_pairs:
         print(f"Data validation errors in file '{file_name}':")
@@ -50,39 +43,4 @@ def verify_data(data, file_name):
             print(f"  - {pair}")
         assert not incorrect_pairs, f"Data validation errors found: {incorrect_pairs}"
 
-def load_csvs(config):
-    """ Will read all CSVs from the data folder """
-    files = glob.glob("./dataset/data/*.csv")
-
-    all_data = pd.DataFrame()
-
-    for file in files:
-        print(f"Processing file: {file}")
-        dfs = [pd.read_csv(file, header=None, sep=",")]
-        data = pd.concat(dfs, ignore_index=True, verify_integrity=True)
-        data.columns = ['english', 'katakana']
-
-        print(f"  Initial number of rows: {len(data)}")
-
-        convert_to_lower = config['convert_to_lower']
-        convert_to_unidecode = config['convert_to_unidecode']
-
-        data = data.dropna()
-
-        """ Format data according to config """
-        for i, column in enumerate(['english', 'katakana']):
-            data[column] = [
-                formattext.format_text(str(x), convert_to_lower, convert_to_unidecode)
-                for x in data[column].to_list()
-            ]
-
-        print(f"  After formatting: {len(data)} rows")
-
-        # Verify data integrity and remove rows with digits
-        verify_data(data, file)
-
-        print(f"  After verification: {len(data)} rows")
-
-        all_data = pd.concat([all_data, data], ignore_index=True, verify_integrity=True)
-
-    return all_data
+    return data

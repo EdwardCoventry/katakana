@@ -1,5 +1,4 @@
 import numpy as np
-from katakana.formattext import format_text
 
 CHAR_CODE_START = 1
 CHAR_CODE_PADDING = 0

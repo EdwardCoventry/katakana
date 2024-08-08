@@ -1,7 +1,8 @@
 from __future__ import print_function
 
 import katakana.model.modeldata
-from katakana import getconfig, model, encoding, loadcsvdata
+from katakana import getconfig, model, loadcsvdata
+from encoding import encoding
 
 # ===============================================================
 # Load model and configuration

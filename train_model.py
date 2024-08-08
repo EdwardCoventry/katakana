@@ -3,13 +3,16 @@ from __future__ import print_function
 import pathlib
 import warnings
 
+import tqdm
+
 import katakana.model.modeldata
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import os.path
 
-from katakana import getconfig, model, encoding, loadcsvdata
+from katakana import getconfig, model, loadcsvdata
+from encoding import encoding
 import keras.callbacks
 
 training_config = getconfig.get_training_config()
@@ -99,7 +102,8 @@ training_encoder_input, training_decoder_input, training_decoder_output = \
     katakana.model.modeldata.create_model_data(encoded_training_input, encoded_training_output, output_encoding_length)
 
 validation_encoder_input, validation_decoder_input, validation_decoder_output = \
-    katakana.model.modeldata.create_model_data(encoded_validation_input, encoded_validation_output, output_encoding_length)
+    katakana.model.modeldata.create_model_data(encoded_validation_input, encoded_validation_output,
+                                               output_encoding_length)
 
 """  stop when ceases to improve  """
 early_stopping_callback = keras.callbacks.EarlyStopping(monitor='loss',
@@ -115,6 +119,27 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     save_best_only=False,
     verbose=1)
 
+
+class TQDMCallback(keras.callbacks.Callback):
+    def __init__(self):
+        super().__init__()
+        self.progbar = None
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.progbar = tqdm.tqdm(total=self.params['steps'],
+                                 desc=f'Epoch {epoch + 1}/{self.params["epochs"]}',
+                                 unit='step')
+
+    def on_batch_end(self, batch, logs=None):
+        self.progbar.update(1)
+        self.progbar.set_postfix(loss=logs.get('loss'), accuracy=logs.get('accuracy'))
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.progbar.close()
+
+
+tqdm_callback = TQDMCallback()
+
 # Model Training
 seq2seq_model.fit(
     x=[training_encoder_input, training_decoder_input],
@@ -124,7 +149,7 @@ seq2seq_model.fit(
     verbose=2,
     batch_size=64,
     epochs=training_config['epochs'],
-    callbacks=[model_checkpoint_callback, early_stopping_callback]
+    callbacks=[model_checkpoint_callback, early_stopping_callback, tqdm_callback]
 )
 
 model.save_model(

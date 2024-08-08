@@ -1,6 +1,6 @@
 import numpy as np
 
-from katakana import encoding
+from encoding import encoding
 
 
 def create_model_data(encoded_input, encoded_output, output_dict_size):

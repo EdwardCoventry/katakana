@@ -1,6 +1,5 @@
-import unidecode
-
-from . import formattext, getconfig, model
+from . import getconfig, model
+from encoding import formattext
 import re
 
 loaded_model = None

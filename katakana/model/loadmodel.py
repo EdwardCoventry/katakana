@@ -2,7 +2,9 @@ import json
 import os
 import pathlib
 from keras.models import load_model
-from katakana import converttotflite, getconfig
+from katakana import getconfig
+from katakana import converttotflite
+
 
 def get_model_path(version, filename):
     return pathlib.Path(__file__).parent.parent / 'trained_models' / str(version) / filename
