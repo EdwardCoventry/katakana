@@ -1,6 +1,7 @@
 import re
 from colorama import Fore
 
+
 def verify_data(data, file_name):
     incorrect_pairs = []
     rows_with_digits = []
@@ -34,7 +35,7 @@ def verify_data(data, file_name):
             incorrect_pairs.append(f"English: {english}, Katakana: {katakana} -> Katakana contains English")
 
     if rows_with_digits:
-        print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)}")
+        print(f"{Fore.YELLOW}  Rows with digits in file '{file_name}': {len(rows_with_digits)} {Fore.YELLOW}")
         data = data.drop(rows_with_digits).reset_index(drop=True)
 
     if incorrect_pairs:
