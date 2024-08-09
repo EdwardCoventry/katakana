@@ -1,1 +1,1 @@
-from katakana.getconfig.getconfig import get_config
+from .getconfig import get_config
