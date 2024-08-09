@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 setup(
@@ -8,7 +8,7 @@ setup(
     license='MIT',
     url='http://github.com/wanasit/katakana',
     author='wanasit/edward',
-    packages=['katakana'],
+    packages=find_packages(),  # Automatically find and include all packages and subpackages
     package_data={'katakana': ['usemodelconfig.yaml', 'trained_models/**/*']},
     install_requires=['keras', 'h5py', 'numpy'],
 )
