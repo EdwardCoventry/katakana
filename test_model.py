@@ -11,7 +11,7 @@ from encoding import encoding
 use_model_config = getconfig.get_use_model_config()
 
 print('Loading the model...')
-testing_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(use_model_config['version'])
+testing_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.loadmodel.load(use_model_config['version'])
 
 # ===============================================================
 # Evaluate the model on the dataset

@@ -56,7 +56,7 @@ if checkpoints_dir.exists() and any(checkpoints_dir.glob(f"*-*.{training_config[
                             key=lambda path: (
                                 # int(re.match('.*([0-9]+)-.*.hdf5', str(path)).group(1)),
                                 os.path.getmtime(path)))
-    seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(
+    seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.loadmodel.load(
         training_config['version'], from_path=latest_checkpoint)
 
     input_encoding_length = get_encoding_length(input_encoding)
@@ -74,17 +74,17 @@ else:
     output_encoding_length = get_encoding_length(output_encoding)
 
     # Building the model ----------------------
-    seq2seq_model = model.create_model(
+    seq2seq_model = model.createmodel.create_model(
         input_dict_size=input_encoding_length,
         output_dict_size=output_encoding_length,
         input_length=training_config['vector_length'],
         output_length=training_config['vector_length']
     )
 
-    model.save_config(
+    model.savemodel.save_config(
         config=training_config)
 
-    model.save_encodings(
+    model.savemodel.save_encodings(
         input_encoding=input_encoding,
         input_decoding=input_decoding,
         output_encoding=output_encoding,
@@ -129,6 +129,6 @@ seq2seq_model.fit(
     callbacks=[model_checkpoint_callback, early_stopping_callback]
 )
 
-model.save_model(
+model.savemodel.save_model(
     model=seq2seq_model,
     config=training_config)

@@ -25,7 +25,7 @@ def load_default_model(version=None, checkpoint=None, use_tflite=True):
         checkpoint = use_model_config['checkpoint']
 
     loaded_model, input_encoding, input_decoding, output_encoding, output_decoding, model_config = \
-        model.load(version=version, checkpoint=checkpoint, use_tflite=use_tflite)
+        model.loadmodel.load(version=version, checkpoint=checkpoint, use_tflite=use_tflite)
 
 
 def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
@@ -42,7 +42,7 @@ def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
     converted_words = []
     for word in words:
         formatted_word = formattext.format_text(word, model_config['convert_to_lower'], model_config['convert_to_unidecode'])
-        converted_word = model.to_katakana(
+        converted_word = model.tokatakana.to_katakana(
             text=formatted_word,
             model=loaded_model,
             input_encoding=input_encoding,
