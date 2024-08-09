@@ -4,7 +4,7 @@ import pathlib
 import yaml
 
 
-root_path = pathlib.Path(__file__).parent.parent.resolve()
+root_path = pathlib.Path(__file__).parent.resolve()
 
 def get_config(path='.', name='config.yaml'):
 	"""  Read YAML file """
