@@ -1,16 +1,16 @@
 import json
 import os
 import pathlib
-from keras.models import load_model
-from katakana import getconfig
-from katakana import converttotflite
+from keras.models import load_model as keras_load_model
 
 
 def get_model_path(version, filename):
     return pathlib.Path(__file__).parent.parent / 'trained_models' / str(version) / filename
 
+
 def get_tflite_path(version, filename):
     return pathlib.Path(__file__).parent.parent / 'trained_models' / str(version) / 'tflite' / filename
+
 
 def load(version=None, checkpoint=None, from_path=None, use_tflite=False):
     assert not (checkpoint and from_path), "Either pass the checkpoint or the path, not both."
@@ -38,15 +38,18 @@ def load(version=None, checkpoint=None, from_path=None, use_tflite=False):
         model_path = get_model_path(version, f"model.{config['file_type']}")
 
     if use_tflite:
+        from katakana import converttotflite
         tflite_model_path = get_tflite_path(version, f"{model_path.stem}.tflite")
         if not tflite_model_path.exists():
-            converttotflite.convert_to_tflite(load_model(model_path), tflite_model_path)
+            converttotflite.convert_to_tflite(keras_load_model(model_path), tflite_model_path)
         model = converttotflite.TFLiteModelWrapper(str(tflite_model_path))
     else:
-        model = load_model(model_path)
+        model = keras_load_model(model_path)
 
     return model, input_encoding, input_decoding, output_encoding, output_decoding, config
 
+
 def load_config(version=None):
+    from katakana import getconfig
     config_path = get_model_path(version, '')
     return getconfig.get_model_config(config_path)
