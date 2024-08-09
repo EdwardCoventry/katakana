@@ -1,7 +1,7 @@
 import numpy as np
 import unidecode
 
-from katakana.encoding import encoding
+from katakana import encoding
 
 
 def to_katakana(text, model, input_encoding, output_decoding, config):

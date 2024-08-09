@@ -9,8 +9,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import os.path
 
-from katakana import getconfig, model, loadcsvdata
-from katakana.encoding import encoding
+from katakana import getconfig, model, loadcsvdata, encoding
 import keras.callbacks
 
 training_config = getconfig.get_training_config()
