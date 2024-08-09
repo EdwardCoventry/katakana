@@ -4,7 +4,7 @@ import unidecode
 from katakana import encoding
 
 
-def to_katakana(text, model, input_encoding, output_decoding, config):
+def convert_to_katakana(text, model, input_encoding, output_decoding, config):
     if config['convert_to_unidecode']:
         text = unidecode.unidecode(text)
     if config['convert_to_lower']:

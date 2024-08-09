@@ -44,7 +44,7 @@ print('Evaluating the model on random names...')
 config = model.load_config(use_model_config['version'])
 
 def to_katakan(english_text):
-    return model.to_katakana(english_text, testing_model, input_encoding, output_decoding, config=config)
+    return model.convert_to_katakana(english_text, testing_model, input_encoding, output_decoding, config=config)
 
 def print_katakana_pairs(data, katakana_func):
     for item in data:

@@ -1,6 +1,6 @@
 from .getconfig import get_use_model_config
 from .encoding import format_text
-from .model import load_model, to_katakana
+from .model import load_model, convert_to_katakana
 import re
 
 loaded_model = None
@@ -44,7 +44,7 @@ def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
     for word in words:
         formatted_word = format_text(word, model_config['convert_to_lower'],
                                      model_config['convert_to_unidecode'])
-        converted_word = to_katakana(
+        converted_word = convert_to_katakana(
             text=formatted_word,
             model=loaded_model,
             input_encoding=input_encoding,

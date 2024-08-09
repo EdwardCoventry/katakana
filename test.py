@@ -2,7 +2,7 @@ import katakana
 
 
 def print_katakana(name, katakana_name):
-    transliterated_katakana = katakana.to_katakana(
+    transliterated_katakana = katakana.convert_to_katakana(
         name.lower(),
         use_tflite=True,
 

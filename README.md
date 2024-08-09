@@ -19,9 +19,10 @@ and should be used just for demonstration propose.
 ```
 
 There is `to_katakana` function that takes English string as an input and return Katakana (unicode) as an output.
-```python
-from katakana import to_katakana 
 
-to_katakana('katakana')
+```python
+from katakana import convert_to_katakana
+
+convert_to_katakana('katakana')
 # u'\u30ab\u30bf\u30ab\u30ca' or カタカナ
 ```
