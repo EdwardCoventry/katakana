@@ -1,5 +1,5 @@
 from .getconfig import get_use_model_config
-from .encoding import formattext
+from .encoding import format_text
 from .model import load_model, to_katakana
 import re
 
@@ -11,10 +11,9 @@ output_decoding = None
 config = None
 use_model_config = None
 
+
 def load_default_model(version=None, checkpoint=None, use_tflite=True):
     global loaded_model, input_encoding, input_decoding, output_encoding, output_decoding, model_config, use_model_config
-
-
 
     if version is None:
         if use_model_config is None:
@@ -43,8 +42,8 @@ def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
     # Process each word separately
     converted_words = []
     for word in words:
-        formatted_word = formattext.format_text(word, model_config['convert_to_lower'],
-                                                model_config['convert_to_unidecode'])
+        formatted_word = format_text(word, model_config['convert_to_lower'],
+                                     model_config['convert_to_unidecode'])
         converted_word = to_katakana(
             text=formatted_word,
             model=loaded_model,
