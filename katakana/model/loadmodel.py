@@ -12,7 +12,7 @@ def get_tflite_path(version, filename):
     return pathlib.Path(__file__).parent.parent / 'trained_models' / str(version) / 'tflite' / filename
 
 
-def load(version=None, checkpoint=None, from_path=None, use_tflite=False):
+def load_model(version=None, checkpoint=None, from_path=None, use_tflite=False):
     assert not (checkpoint and from_path), "Either pass the checkpoint or the path, not both."
 
     config = load_config(version)
