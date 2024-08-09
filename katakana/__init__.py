@@ -1,4 +1,4 @@
-from katakana import getconfig, model
+from . import getconfig, model
 from encoding import formattext
 import re
 
