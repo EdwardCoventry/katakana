@@ -31,14 +31,15 @@ def create_model(input_dict_size, output_dict_size, input_length, output_length)
     encoder_outputs, forward_h, forward_c, backward_h, backward_c = encoder_lstm_1(encoder_embedding)
     encoder_outputs, forward_h2, forward_c2, backward_h2, backward_c2 = encoder_lstm_2(encoder_outputs)
 
-    # Use only forward states
+    # Use only forward states (no concatenation)
     encoder_states = [forward_h2, forward_c2]
     encoder_outputs = LayerNormalization()(encoder_outputs)
 
     # Decoder
     decoder_inputs = Input(shape=(output_length,))
     decoder_embedding = Embedding(input_dim=output_dict_size, output_dim=EMBEDDING_DIM, mask_zero=True)(decoder_inputs)
-    decoder_lstm = LSTM(LSTM_UNITS * 2, return_sequences=True, return_state=True, dropout=0.3, recurrent_dropout=0.3)
+    # Decoder LSTM expecting the same state size as provided by the encoder (LSTM_UNITS, not LSTM_UNITS * 2)
+    decoder_lstm = LSTM(LSTM_UNITS, return_sequences=True, return_state=True, dropout=0.3, recurrent_dropout=0.3)
     decoder_lstm_outputs, _, _ = decoder_lstm(decoder_embedding, initial_state=encoder_states)
     decoder_lstm_outputs = LayerNormalization()(decoder_lstm_outputs)
 
