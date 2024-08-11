@@ -2,9 +2,9 @@ import katakana
 
 
 def print_katakana(name, katakana_name):
-    transliterated_katakana = katakana.convert_to_katakana(
+    transliterated_katakana = katakana.to_katakana(
         name.lower(),
-        use_tflite=True,
+        use_tflite=False,
 
     )
 
@@ -12,20 +12,28 @@ def print_katakana(name, katakana_name):
 
 
 if __name__ == '__main__':
-    test_cases = [
-        ('Coventry', 'コヴェントリー'),
-        ('Hello・World', 'ハロー・ワールド'),
-        ('Banana', 'バナナ'),
-        ('Test', 'テスト'),
-        ('Canada', 'カナダ'),
-        ('Barbecue', 'バーベキュー'),
-        ('Google・Maps', 'グーグル マップ'),
-        ('John・Doe', 'ジョン・ドウ'),
-        ('Donald・Duck', 'ドナルド・ダック'),
-        ('Donald・Trump', 'ドナルド・トランプ')
-    ]
-
-    for name, katakana_name in test_cases:
+    test_cases = {
+        'alsok': 'アルソック',
+        'orkest': 'オーケスト',
+        'reds': 'レッズ',
+        'vegetabrella': 'ベジタブレラ',
+        'palimpalim': 'パリンパリン',
+        'palitextdestroy': 'パリテキストデストロイ',
+        'pandespiegle': 'パンデスピーグル',
+        'Coventry': 'コヴェントリー',
+        'Hello・World': 'ハロー・ワールド',
+        'Banana': 'バナナ',
+        'Test': 'テスト',
+        'Canada': 'カナダ',
+        'Barbecue': 'バーベキュー',
+        'Google・Maps': 'グーグル マップ',
+        'John・Doe': 'ジョン・ドウ',
+        'Donald・Duck': 'ドナルド・ダック',
+        'Donald・Trump': 'ドナルド・トランプ',
+        'adio': 'アディオ',
+        'sc': 'スク',
+    }
+    for name, katakana_name in test_cases.items():
         print_katakana(name, katakana_name)
 
     exit()

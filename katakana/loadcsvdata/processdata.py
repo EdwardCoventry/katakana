@@ -1,4 +1,4 @@
-from katakana import formattext
+from katakana.encoding.formattext import format_text
 from katakana.loadcsvdata.verifydata import verify_data
 from katakana.loadcsvdata.loadfiles import load_csv_files
 
@@ -14,7 +14,7 @@ def load_csvs(config):
 
     """ Format data according to config """
     for column in ['english', 'katakana']:
-        all_data[column] = all_data[column].apply(lambda x: formattext.format_text(str(x), convert_to_lower, convert_to_unidecode))
+        all_data[column] = all_data[column].apply(lambda x: format_text(str(x), convert_to_lower, convert_to_unidecode))
 
     print(f"  After formatting: {len(all_data)} rows")
 

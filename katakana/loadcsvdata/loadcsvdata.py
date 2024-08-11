@@ -1,7 +1,7 @@
 import glob
 import pandas as pd
 import re
-from katakana import formattext
+from katakana.encoding.formattext import format_text
 from colorama import Fore, Style
 from collections import Counter
 
@@ -71,7 +71,7 @@ def load_csvs(config):
         """ Format data according to config """
         for column in ['english', 'katakana']:
             data[column] = data[column].apply(
-                lambda x: formattext.format_text(str(x), convert_to_lower, convert_to_unidecode))
+                lambda x: format_text(str(x), convert_to_lower, convert_to_unidecode))
 
         print(f"  After formatting: {len(data)} rows")
 
