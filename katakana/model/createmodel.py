@@ -31,9 +31,8 @@ def create_model(input_dict_size, output_dict_size, input_length, output_length)
     encoder_outputs, forward_h, forward_c, backward_h, backward_c = encoder_lstm_1(encoder_embedding)
     encoder_outputs, forward_h2, forward_c2, backward_h2, backward_c2 = encoder_lstm_2(encoder_outputs)
 
-    state_h = Concatenate()([forward_h2, backward_h2])
-    state_c = Concatenate()([forward_c2, backward_c2])
-    encoder_states = [state_h, state_c]
+    # Use only forward states
+    encoder_states = [forward_h2, forward_c2]
     encoder_outputs = LayerNormalization()(encoder_outputs)
 
     # Decoder
