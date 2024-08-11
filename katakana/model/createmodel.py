@@ -4,7 +4,7 @@ from keras.layers import (
     LayerNormalization, Attention, TimeDistributed)
 from keras.models import Model
 
-# Select the appropriate Adam optimizer based on the platform
+# Use the legacy Adam optimizer for macOS
 if platform.system() == 'Darwin':
     from tensorflow.keras.optimizers.legacy import Adam
 else:
@@ -54,19 +54,10 @@ def create_model(input_dict_size, output_dict_size, input_length, output_length)
     # Define the model
     seq2seq_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
-    # Check if the platform is macOS
-    if platform.system() == 'Darwin':
-        from tensorflow.keras.optimizers.legacy import Adam as LegacyAdam
-        optimizer = LegacyAdam(learning_rate=0.001)
-    else:
-        optimizer = Adam(learning_rate=0.001)
-
-    # Compile the model using the selected optimizer
-    seq2seq_model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
-
-    seq2seq_model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
-
     # Print model summary
     seq2seq_model.summary()
+
+    # Compile the model
+    seq2seq_model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 
     return seq2seq_model
