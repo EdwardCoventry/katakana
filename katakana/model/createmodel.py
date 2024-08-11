@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras.layers import (Input, Embedding, Dense, Dropout, LSTM, Concatenate, Bidirectional, LayerNormalization,
-                          Attention, MultiHeadAttention)
+                          Attention)
 from keras.models import Model
 from keras.optimizers import Adam
 from keras.layers import TimeDistributed, Layer

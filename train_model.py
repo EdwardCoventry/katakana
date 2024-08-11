@@ -41,13 +41,13 @@ def get_encoding_length(encoding):
 
 # delete folder if it exists, and (re)make it
 #      also make checkpoints folder
-version_dir = pathlib.Path('katakana', 'trained_models', str(training_config['version']))
+version_dir = pathlib.Path('katakana', 'trained_models', str(training_config['version'])).resolve()
 if version_dir.exists():
     _training_config = getconfig.get_model_config(pathlib.Path('trained_models', str(training_config['version'])))
     _training_config['epochs'] = training_config['epochs']
     training_config = _training_config
 else:
-    os.mkdir(version_dir)
+    version_dir.mkdir()
 checkpoints_dir = version_dir.joinpath('checkpoints')
 if checkpoints_dir.exists() and any(checkpoints_dir.glob(f"*-*.{training_config['file_type']}")):
     """  just use most recent checkpoint, since epoch index doesnt get saved between runs  """

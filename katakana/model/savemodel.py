@@ -1,18 +1,17 @@
 import json
-import os
+from pathlib import Path
 
 from katakana import getconfig
 
 
 def save_config(config):
-    version_dir = os.path.join('../trained_models', str(config['version']))
-    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
-    getconfig.write_model_config(config, get_path(''))
+    version_dir = Path(__file__).parent.parent / 'trained_models' / str(config['version'])
+    getconfig.write_model_config(config, version_dir)
 
 
 def save_encodings(input_encoding, input_decoding, output_encoding, output_decoding, config):
-    version_dir = os.path.join('../trained_models', str(config['version']))
-    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
+    version_dir = Path(__file__).parent.parent / 'trained_models' / str(config['version'])
+    get_path = lambda filename: version_dir / filename
 
     with open(get_path('input_encoding.json'), 'w') as f:
         json.dump(input_encoding, f)
@@ -28,7 +27,5 @@ def save_encodings(input_encoding, input_decoding, output_encoding, output_decod
 
 
 def save_model(model, config):
-    version_dir = os.path.join('../trained_models', str(config['version']))
-    get_path = lambda filename: os.path.join(__file__, '..', version_dir, filename)
-
-    model.save(get_path(f"model.{config['file_type']}"))
+    version_dir = Path(__file__).parent.parent / 'trained_models' / str(config['version'])
+    model.save(version_dir / f"model.{config['file_type']}")
