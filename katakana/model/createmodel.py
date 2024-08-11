@@ -60,8 +60,6 @@ def create_model(input_dict_size, output_dict_size, input_length, output_length)
     # Compile the model using the selected optimizer
     seq2seq_model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
-    seq2seq_model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
-
     # Print model summary
     seq2seq_model.summary()
 
