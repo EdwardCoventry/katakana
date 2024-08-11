@@ -22,7 +22,7 @@ def load_csvs(config):
     for file_name in all_data['file_name'].unique():
         print(f"Processing file: {file_name}")
         data = all_data[all_data['file_name'] == file_name]
-        verify_data(data, file_name)
+        verify_data(data, file_name, config)
         all_data.update(data)
 
     print(f"  After verification: {len(all_data)} rows")
