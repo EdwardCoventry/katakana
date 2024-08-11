@@ -1,9 +1,9 @@
 pandas
 numpy
 h5py
-tensorflow==2.16.2
+keras==2.15.0
+tensorflow==2.15.1
 requests
-PyYAML
 unidecode
 pyyaml
 colorama
