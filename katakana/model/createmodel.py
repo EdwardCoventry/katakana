@@ -1,12 +1,16 @@
-import tensorflow as tf
 import platform
-from keras.layers import (Input, Embedding, Dense, LSTM, Concatenate, Bidirectional, LayerNormalization,
-                          Attention)
+from keras.layers import (
+    Input, Embedding, Dense, LSTM, Concatenate, Bidirectional,
+    LayerNormalization, Attention, TimeDistributed)
 from keras.models import Model
-from keras.optimizers import Adam
-from keras.layers import TimeDistributed
 
-# this is really slow but at least it runs...
+# Select the appropriate Adam optimizer based on the platform
+if platform.system() == 'Darwin':
+    from tensorflow.keras.optimizers.legacy import Adam
+else:
+    from keras.optimizers import Adam
+
+
 # tf.config.experimental_run_functions_eagerly(True)
 # tf.data.experimental.enable_debug_mode()
 
@@ -59,6 +63,8 @@ def create_model(input_dict_size, output_dict_size, input_length, output_length)
 
     # Compile the model using the selected optimizer
     seq2seq_model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+    seq2seq_model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 
     # Print model summary
     seq2seq_model.summary()
