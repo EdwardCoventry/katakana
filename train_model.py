@@ -11,6 +11,7 @@ import os.path
 
 from katakana import getconfig, model, loadcsvdata, encoding
 import keras.callbacks
+import re
 
 training_config = getconfig.get_training_config()
 
@@ -56,14 +57,21 @@ if checkpoints_dir.exists() and any(checkpoints_dir.glob(f"*-*.{training_config[
                             key=lambda path: (
                                 # int(re.match('.*([0-9]+)-.*.hdf5', str(path)).group(1)),
                                 os.path.getmtime(path)))
-    seq2seq_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(
+    to_katakana_model, input_encoding, input_decoding, output_encoding, output_decoding, config = model.load(
         training_config['version'], from_path=latest_checkpoint)
 
     input_encoding_length = get_encoding_length(input_encoding)
     output_encoding_length = get_encoding_length(output_encoding)
+
+    # Extract the epoch number from the filename using regex
+    match = re.search(r"(\d+)-", str(latest_checkpoint.name))
+    assert match
+    initial_epoch = int(match.group(1))
+
 else:
     checkpoints_dir.mkdir(exist_ok=True)
     latest_checkpoint = None
+    initial_epoch = 0
 
     # Encoding the dataset ----------------------
 
@@ -74,7 +82,7 @@ else:
     output_encoding_length = get_encoding_length(output_encoding)
 
     # Building the model ----------------------
-    seq2seq_model = model.create_model(
+    to_katakana_model = model.create_model(
         input_dict_size=input_encoding_length,
         output_dict_size=output_encoding_length,
         input_length=training_config['vector_length'],
@@ -117,18 +125,18 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     save_best_only=False,
     verbose=1)
 
-# Model Training
-seq2seq_model.fit(
-    x=[training_encoder_input, training_decoder_input],
+# Train the model starting from the correct epoch
+to_katakana_model.fit(
+    x=encoded_training_input,
     y=training_decoder_output,
-    validation_data=(
-        [validation_encoder_input, validation_decoder_input], validation_decoder_output),
+    validation_data=(encoded_validation_input, validation_decoder_output),
     verbose=1,
     batch_size=64,
     epochs=training_config['epochs'],
-    callbacks=[model_checkpoint_callback, early_stopping_callback]
+    callbacks=[model_checkpoint_callback, early_stopping_callback],
+    initial_epoch=initial_epoch  # Start from the correct epoch number
 )
 
 model.save_model(
-    model=seq2seq_model,
+    model=to_katakana_model,
     config=training_config)
