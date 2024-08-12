@@ -75,8 +75,8 @@ else:
 
     # Encoding the dataset ----------------------
 
-    input_encoding, input_decoding = encoding.build_characters_encoding(data_input, training_config)
-    output_encoding, output_decoding = encoding.build_characters_encoding(data_output, training_config)
+    input_encoding, input_decoding = encoding.build_characters_encoding(data_input)
+    output_encoding, output_decoding = encoding.build_characters_encoding(data_output)
 
     input_encoding_length = get_encoding_length(input_encoding)
     output_encoding_length = get_encoding_length(output_encoding)

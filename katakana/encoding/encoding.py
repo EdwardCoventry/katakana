@@ -7,14 +7,18 @@ class SPECIAL_CODES:
     SOS = 'SOS'
     EOS = 'EOS'
 
+    CODES = {PAD, SOS, EOS}
+
 
 class _SPECIAL_CODES_ENCODING:
     PAD = 0
     SOS = 1
     EOS = 2
 
+    CODES_ENCODING = {PAD, SOS, EOS}
 
-def build_characters_encoding(names, config):
+
+def build_characters_encoding(names):
     """
     :param names: list of strings
     :return: (encoding, decoding)
@@ -66,7 +70,12 @@ def decode(decoding, vector):
     """
     text = ''
     for x in vector:
-        if x == _SPECIAL_CODES_ENCODING.EOS or x == _SPECIAL_CODES_ENCODING.PAD:
+        if x in {_SPECIAL_CODES_ENCODING.PAD, _SPECIAL_CODES_ENCODING.EOS}:
             break
-        text += decoding.get(x, '')  # Use an empty string for unknown codes
+        elif x == _SPECIAL_CODES_ENCODING.SOS:
+            continue
+        else:
+            # add the katakana character to the text
+            # Use an empty string for unknown codes (i doubt this will happen)
+            text += decoding.get(x, '')
     return text

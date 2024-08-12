@@ -12,9 +12,9 @@ def word_split(text, config):
 
     for part in parts:
         if is_valid(part):
-            result.append(part)
-        else:
             result.extend(split_section([part], max_length))
+        else:
+            result.append(part)
 
     return result
 

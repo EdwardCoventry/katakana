@@ -30,8 +30,6 @@ def convert_to_katakana(text, model, input_encoding, output_decoding, config):
         next_char = output[0, i - 1]
         if next_char == input_encoding[SPECIAL_CODES.EOS]:
             break
-        elif next_char == input_encoding[SPECIAL_CODES.SOS]:
-            continue
         else:
             decoder_input[:, i] = next_char
 
