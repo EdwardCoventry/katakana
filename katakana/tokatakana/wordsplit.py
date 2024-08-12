@@ -1,25 +1,22 @@
 import wordninja
-import re
-
-# Define the pattern to find groups of digits and non-word characters
-split_pattern = re.compile(r'([0-9]+|\W+)')
+from katakana.encoding import LEN_START_AND_END_CODES
+from katakana.encoding.invalidchars import is_valid, split_at_valid
 
 def word_split(text, config):
-    max_length = config['vector_length']
+    max_length = config['vector_length'] - LEN_START_AND_END_CODES
 
     # Split the text into words, groups of digits, and groups of non-word characters
-    parts = split_pattern.split(text)
+    parts = split_at_valid(text)
 
     result = []
 
     for part in parts:
-        if part.isalpha():  # if the part contains only alphabetic characters
-            result.extend(split_section([part], max_length))
-        else:
+        if is_valid(part):
             result.append(part)
+        else:
+            result.extend(split_section([part], max_length))
 
     return result
-
 
 def split_section(text_list, max_length):
     result = []

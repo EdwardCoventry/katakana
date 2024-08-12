@@ -13,11 +13,12 @@ def print_katakana(name, katakana_name):
 
 if __name__ == '__main__':
     test_cases = {
+        'number9isanumberwichisalsoknownas9': 'ナンバー9イズアナンバーウィッチイズアルソウノウナズ9',
+        'supercalifragilisticexpialidocious': 'スーパーキャリフラジリスティックエクスピアリドーシャス',
+        'nitrobenzenesulfenanilide': 'ニトロベンゼンスルフェナニリド',
         'alsok': 'アルソック',
         'orkest': 'オーケスト',
         'reds': 'レッズ',
-        'number9isanumberwichisalsoknownas9': 'ナンバー9イズアナンバーウィッチイズアルソウノウナズ9',
-        'nitrobenzenesulfenanilide': 'ニトロベンゼンスルフェナニリド',  # Proper Katakana conversion
         'vegetabrella': 'ベジタブレラ',
         'palimpalim': 'パリンパリン',
         'palitextdestroy': 'パリテキストデストロイ',
@@ -34,7 +35,6 @@ if __name__ == '__main__':
         'Donald・Trump': 'ドナルド・トランプ',
         'adio': 'アディオ',
         'sc': 'スク',
-        'supercalifragilisticexpialidocious': 'スーパーキャリフラジリスティックエクスピアリドーシャス',
         'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch': 'ランヴェアプルグウィングルゴゲリュフウィルンドロブウリュランティスィリオゴゴゴホ'
     }
     for name, katakana_name in test_cases.items():

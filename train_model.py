@@ -127,9 +127,9 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
 
 # Train the model starting from the correct epoch
 to_katakana_model.fit(
-    x=encoded_training_input,
-    y=training_decoder_output,
-    validation_data=(encoded_validation_input, validation_decoder_output),
+    x=[training_encoder_input, training_decoder_input],  # Pass both encoder and decoder inputs
+    y=training_decoder_output,  # Target output
+    validation_data=([validation_encoder_input, validation_decoder_input], validation_decoder_output),  # Validation data
     verbose=1,
     batch_size=64,
     epochs=training_config['epochs'],

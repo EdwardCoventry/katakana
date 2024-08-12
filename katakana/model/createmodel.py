@@ -1,7 +1,7 @@
 import platform
 from keras.layers import (
     Input, Embedding, Dense, LSTM, Concatenate, Bidirectional,
-    LayerNormalization, Attention, TimeDistributed, Add)
+    LayerNormalization, TimeDistributed)
 from keras.models import Model
 
 # Use the legacy Adam optimizer for macOS

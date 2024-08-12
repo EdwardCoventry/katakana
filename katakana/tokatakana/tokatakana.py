@@ -1,6 +1,6 @@
 from .loaddefaultmodel import load_default_model
-from .wordsplit import word_split, split_pattern  # Import the split_pattern regex
-from katakana.encoding import format_text
+from .wordsplit import word_split
+from katakana.encoding import format_text, is_valid
 from katakana.model import convert_to_katakana
 
 def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
@@ -16,9 +16,7 @@ def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
     # Process each word separately
     converted_words = []
     for word in words:
-        if split_pattern.match(word):  # If the word is a digit or symbol, add it directly
-            converted_words.append(word)
-        else:
+        if is_valid(word):  # If the word is a digit or symbol, add it directly
             formatted_word = format_text(word, model_config['convert_to_lower'],
                                          model_config['convert_to_unidecode'])
             converted_word = convert_to_katakana(
@@ -29,6 +27,8 @@ def to_katakana(text, version=None, checkpoint=None, use_tflite=True):
                 config=model_config
             )
             converted_words.append(converted_word)
+        else:
+            converted_words.append(word)
 
     # Join the converted words back together with no separator (preserving original format)
     joined_text = ''.join(converted_words)

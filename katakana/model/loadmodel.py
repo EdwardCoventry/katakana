@@ -32,7 +32,10 @@ def load_model(version=None, checkpoint=None, from_path=None, use_tflite=False):
     elif checkpoint:
         checkpoint_path = get_model_path(version, 'checkpoints')
         checkpoint = str(checkpoint).zfill(2)
-        model_path = max(checkpoint_path.glob(f"{checkpoint}-*.{config['file_type']}"),
+        matching_checkpoints = list(checkpoint_path.glob(f"{checkpoint}-*.{config['file_type']}"))
+        if not matching_checkpoints:
+            raise FileNotFoundError(f"No checkpoint found for version {version} and checkpoint {checkpoint}")
+        model_path = max(matching_checkpoints,
                          key=os.path.getmtime)
     else:
         model_path = get_model_path(version, f"model.{config['file_type']}")

@@ -12,12 +12,12 @@ def create_model_data(encoded_input, encoded_output, output_dict_size):
     """
     encoder_input = encoded_input
 
-    # Initialize decoder_input with zeros and shift encoded_output
+    # Adjust decoder_input to include SOS token and shift the sequence to the right
     decoder_input = np.zeros_like(encoded_output)
-    decoder_input[:, 1:] = encoded_output[:, :-1]
-    decoder_input[:, 0] = encoding.CHAR_CODE_START  # Use the start token directly
+    decoder_input[:, 0] = encoding.CHAR_CODE_START  # SOS token at the start
+    decoder_input[:, 1:] = encoded_output[:, :-1]  # Shift the output by one
 
-    # Convert encoded_output to one-hot encoding
+    # Convert encoded_output to one-hot encoding, ignoring the last EOS token if necessary
     decoder_output = np.eye(output_dict_size)[encoded_output]
 
     return encoder_input, decoder_input, decoder_output
