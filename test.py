@@ -4,8 +4,7 @@ import katakana
 def print_katakana(name, katakana_name):
     transliterated_katakana = katakana.to_katakana(
         name.lower(),
-        use_tflite=False,
-
+        use_tflite=True,
     )
 
     print(f"{name} -> {transliterated_katakana}    ({katakana_name})")
