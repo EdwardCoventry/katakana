@@ -12,6 +12,8 @@ def print_katakana(name, katakana_name):
 
 if __name__ == '__main__':
     test_cases = {
+        'fragilistic': 'フラジリスティック',
+        'fragilisticexp': 'フラジリスティックエクスピ',
         'number9isanumberwichisalsoknownas9': 'ナンバー9イズアナンバーウィッチイズアルソウノウナズ9',
         'supercalifragilisticexpialidocious': 'スーパーキャリフラジリスティックエクスピアリドーシャス',
         'nitrobenzenesulfenanilide': 'ニトロベンゼンスルフェナニリド',
